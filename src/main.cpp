@@ -1,3 +1,4 @@
+#include <iostream>
 #include "conio.h"
 #include "graphics.h"
 
@@ -10,17 +11,24 @@
 using namespace std;
 
 int main() {
+	setlocale(0, "RUS");
 	const char settingsFilename[] = "settings";		// дефолтное имя файла настроек
-	gameSettings settings;			// настройки игры
-	if(!loadSettings(settingsFilename, settings)) {
-		return 1;					// на этом моменте можно попробовать создать новый файл с настройками
+	gameSettings settings;
+	
+	switch(initSettings(settingsFilename, settings)) {	
+	case 1:
+		cout << "Не удалось ни загрузить старый файл настроек, ни создать новый.\n";
+		return 1;
+	case 2:
+		cout << "Был создан новый файл настроек, так как старый не удалось загрузить.\n";
 	}
+	
 	while(menu(settings)) {		// menu возвратит false, если игрок решил выйти, либо true, если решил начать игру
-		gameField field;		// поле игры
+		gameField field;		
 		startGame(settings, field); 	// открываем игровое окно, инициализируем поле
 		do {
 			logic(settings, field);		// обрабатываем логику игры
-			render(settings, field);	// рисуем на экране
+			render(settings, field);	// и рисуем поле на экране,
 		} while (!kbhit() && getch() != 27);	// пока не нажали Escape
 		endGame();			// закрываем игровое окно, освобождаем поле
 	}
