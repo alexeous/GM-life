@@ -18,17 +18,22 @@ bool loadSettingsFile(const char *filename, gameSettings &settings) {
 	return validateSettings(settings);
 }
 
+bool saveSettingsFile(const char *filename, const gameSettings settings) {
+	FILE *settingsFile = fopen(filename, "w");
+	if(!settingsFile)
+		return false;	// не удалось создать
+	if(!fwrite(&settings, sizeof(gameSettings), 1, settingsFile)) {	
+		fclose(settingsFile);
+		return false;	// не удалось записать
+	}
+	fclose(settingsFile);
+	return true;
+}
+
 int initSettings(const char *filename, gameSettings &settings) {
 	if(!loadSettingsFile(filename, settings)) {
-		FILE *newSettingsFile = fopen(filename, "w");
-		if(!newSettingsFile)
-			return 1;	// не удалось создать новый
-		if(!fwrite(&defaultSettings, sizeof(gameSettings), 1, newSettingsFile)) {	// defaultSettings - в struct.h
-			fclose(newSettingsFile);
-			return 1;	// не удалось записать в новый
-		}
-		fclose(newSettingsFile);
-		return 2;		// успешно создан новый
+		bool recreateSucceed = saveSettingsFile(filename, defaultSettings); 		// defaultSettings - в struct.h
+		return  recreateSucceed ? 2 : 1; 	// 2 - успешно создан новый, 1 - не удалось создать новый
 	}
 	else return 0;		// загрузка успешна
 }
