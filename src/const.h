@@ -1,8 +1,9 @@
 #ifndef CONST_H
 #define CONST_H
 
-#define CELL_SIZE_PX 20
+#include "settings.h"
 
+#define CELL_SIZE_PX 20
 const gameSettings defaultSettings = { 20, 20 };
 
 

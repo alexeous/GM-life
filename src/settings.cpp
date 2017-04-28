@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "const.h"
 #include "settings.h"
 
 bool validateSettings(const gameSettings settings) {
@@ -32,6 +33,7 @@ bool saveSettingsFile(const char *filename, const gameSettings settings) {
 
 int initSettings(const char *filename, gameSettings &settings) {
 	if(!loadSettingsFile(filename, settings)) {
+		settings = defaultSettings;
 		bool recreateSucceed = saveSettingsFile(filename, defaultSettings); 		// defaultSettings - в struct.h
 		return  recreateSucceed ? 2 : 1; 	// 2 - успешно создан новый, 1 - не удалось создать новый
 	}
