@@ -68,7 +68,7 @@ void menuSettings (const char *filename, gameSettings &settings) {
         }
 
         if (key == VK_RETURN) {
-            if (menuPoint == 3) {
+            if (menuPoint == 3) {    // Нажатие на "APPLY"
                 settings.fieldW = fieldW;
                 settings.fieldH = fieldH;
                 saveSettingsFile(filename, settings);
@@ -76,9 +76,7 @@ void menuSettings (const char *filename, gameSettings &settings) {
                 initwindow(settings.fieldW * CELL_SIZE_PX,
                            settings.fieldH * CELL_SIZE_PX);
             }
-            if (menuPoint == 4) {
-                return ;
-            }
+            if (menuPoint == 4) return ;    // Нажатие на "MAIN MENU"
         }
     }
 }
