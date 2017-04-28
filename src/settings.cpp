@@ -3,8 +3,8 @@
 #include "settings.h"
 
 bool validateSettings(const gameSettings settings) {
-	return (settings.fieldW > 0 && settings.fieldW <= MAX_FIELD_W) &&
-		   (settings.fieldH > 0 && settings.fieldH <= MAX_FIELD_H);
+	return (settings.fieldW >= MIN_FIELD_W && settings.fieldW <= MAX_FIELD_W) &&
+		   (settings.fieldH >= MIN_FIELD_H && settings.fieldH <= MAX_FIELD_H);
 }
 
 bool loadSettingsFile(const char *filename, gameSettings &settings) {
@@ -23,7 +23,7 @@ bool saveSettingsFile(const char *filename, const gameSettings settings) {
 	FILE *settingsFile = fopen(filename, "w");
 	if(!settingsFile)
 		return false;	// не удалось создать
-	if(!fwrite(&settings, sizeof(gameSettings), 1, settingsFile)) {	
+	if(!fwrite(&settings, sizeof(gameSettings), 1, settingsFile)) {
 		fclose(settingsFile);
 		return false;	// не удалось записать
 	}
