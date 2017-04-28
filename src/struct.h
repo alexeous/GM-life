@@ -13,9 +13,6 @@ struct cell {
 	bool isAlive;
 };
 
-struct gameField {
-	int width, height;
-	cell **cells;
-};
+typedef cell** gameField;
 
 #endif // STRUCT_H
