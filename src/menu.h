@@ -3,6 +3,6 @@
 
 #include "struct.h"
 
-bool menu(gameSettings &settings);	// false - выход, true - запуск игры
+bool menu(const char *filename, gameSettings &settings);	// false - выход, true - запуск игры
 
 #endif // MENU_H

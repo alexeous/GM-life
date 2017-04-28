@@ -14,17 +14,17 @@ int main() {
 	setlocale(0, "RUS");
 	const char settingsFilename[] = "settings";		// дефолтное имя файла настроек
 	gameSettings settings;
-	
-	switch(initSettings(settingsFilename, settings)) {	
+
+	switch(initSettings(settingsFilename, settings)) {
 	case 1:
 		cout << "Не удалось ни загрузить старый файл настроек, ни создать новый.\n";
 		return 1;
 	case 2:
 		cout << "Был создан новый файл настроек, так как старый не удалось загрузить.\n";
 	}
-	
-	while(menu(settings)) {		// menu возвратит false, если игрок решил выйти, либо true, если решил начать игру
-		gameField field;		
+
+	while(menu(settingsFilename, settings)) {		// menu возвратит false, если игрок решил выйти, либо true, если решил начать игру
+		gameField field;
 		startGame(settings, field); 	// открываем игровое окно, инициализируем поле
 		do {
 			logic(settings, field);		// обрабатываем логику игры

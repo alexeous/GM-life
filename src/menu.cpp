@@ -1,10 +1,11 @@
 #include "menu.h"
 #include "const.h"
+#include "settings.h"
 #include "graphics.h"
 #include "conio.h"
 #include <stdio.h>
 
-void menuSettings(gameSettings &settings) {
+void menuSettings (const char *filename, gameSettings &settings) {
     int fieldW = settings.fieldW,
         fieldH = settings.fieldH,
         menuPoint = 1;
@@ -70,6 +71,7 @@ void menuSettings(gameSettings &settings) {
             if (menuPoint == 3) {
                 settings.fieldW = fieldW;
                 settings.fieldH = fieldH;
+                saveSettingsFile(filename, settings);
                 closegraph();
                 initwindow(settings.fieldW * CELL_SIZE_PX,
                            settings.fieldH * CELL_SIZE_PX);
@@ -81,7 +83,7 @@ void menuSettings(gameSettings &settings) {
     }
 }
 
-bool menu(gameSettings &settings) {
+bool menu(const char *filename, gameSettings &settings) {
     int menuPoint = 1;
     char key = 0;
 
@@ -124,7 +126,7 @@ bool menu(gameSettings &settings) {
             case 1:    // Нажатие на "START GAME"
                 closegraph(); return true;
             case 2:    // Нажатие на "SETTINGS"
-                menuSettings(settings); break;
+                menuSettings(filename, settings); break;
             case 3:    // Нажатие на "EXIT"
                 closegraph(); return false;
             }
