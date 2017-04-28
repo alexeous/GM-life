@@ -13,5 +13,4 @@ void render(const gameSettings settings, const gameField field) {	// TODO
         int x = CELL_SIZE_PX * (i+1) + 1;
         line(0, x, settings.windowW, x);
     }
-    delay(1000);
 }

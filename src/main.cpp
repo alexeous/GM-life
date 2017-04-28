@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 #include "conio.h"
 #include "graphics.h"
 
@@ -21,6 +22,7 @@ int main() {
 		return 1;
 	case 2:
 		cout << "Был создан новый файл настроек, так как старый не удалось загрузить.\n";
+		fflush(stdout);
 	}
 
 	while(menu(settingsFilename, settings)) {		// menu возвратит false, если игрок решил выйти, либо true, если решил начать игру
