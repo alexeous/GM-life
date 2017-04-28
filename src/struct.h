@@ -7,7 +7,6 @@
 struct gameSettings {
 	int fieldW, fieldH;
 };
-const gameSettings defaultSettings = { 20, 20 };
 
 struct cell {
 	bool isAlive;
