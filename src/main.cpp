@@ -30,7 +30,7 @@ int main() {
 			logic(settings, field);		// обрабатываем логику игры
 			render(settings, field);	// и рисуем поле на экране,
 		} while (!kbhit() && getch() != 27);	// пока не нажали Escape
-		endGame();			// закрываем игровое окно, освобождаем поле
+		endGame(settings, field);		// закрываем игровое окно, освобождаем поле
 	}
 	return 0;
 }
