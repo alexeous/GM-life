@@ -27,8 +27,7 @@ $(EXE): $(OBJ)
 	g++ $^ -o $@ $(CF)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	g++ $^ -c -o $@ $(CF)
-	g++ $^ -MM > $(OBJ_DIR)/$*.d $(CF)
+	g++ $^ -c -o $@ $(CF) -MMD -MF $(OBJ_DIR)/$*.d
 
 
 
@@ -38,8 +37,7 @@ $(TEST_EXE): $(TEST_OBJ) $(patsubst build/src/main.o, ,$(OBJ))
 	g++ $^ -o $@ $(CF_TEST)
 
 $(TEST_OBJ_DIR)/%.o: $(TEST_SRC_DIR)/%.cpp
-	g++ $^ -c -o $@ $(CF_TEST)
-	g++ $^ -MM > $(TEST_OBJ_DIR)/$*.d $(CF_TEST)
+	g++ $^ -c -o $@ $(CF_TEST) -MMD -MF $(TEST_OBJ_DIR)/$*.d
 
 
 clean:
