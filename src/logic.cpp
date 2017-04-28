@@ -2,7 +2,7 @@
 #include "logic.h"
 #include "graphics.h"
 
-void startGame(const gameSettings settings, gameField &field) {
+void startGame(gameSettings &settings, gameField &field) {
 	int w = settings.fieldW;
 	int h = settings.fieldH;
 	field = new cell*[h+2];			// +2 строки вокруг поля
@@ -15,9 +15,9 @@ void startGame(const gameSettings settings, gameField &field) {
 	for(int j = 0; j < h+2; j++)
 		field[0][j].isAlive = field[h+1][j].isAlive = false;	// заполняем клетки сверху и снизу поля
 
-	int windowWidth = w * CELL_SIZE_PX + (w-1);	  // + по 1 пикселю на сетку между клетками
-	int windowHeight = h * CELL_SIZE_PX + (h-1);
-	initwindow(windowWidth, windowHeight, "GM-life");
+	settings.windowW = w * CELL_SIZE_PX + (w-1);	  // + по 1 пикселю на сетку между клетками
+	settings.windowH = h * CELL_SIZE_PX + (h-1);
+	initwindow(settings.windowW, settings.windowH, "GM-life");
 	setbkcolor(WHITE);
 	cleardevice();
 }

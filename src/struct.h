@@ -3,6 +3,7 @@
 
 struct gameSettings {
 	int fieldW, fieldH;
+	int windowW, windowH;
 };
 
 struct cell {
