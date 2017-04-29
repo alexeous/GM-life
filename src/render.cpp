@@ -2,7 +2,7 @@
 #include "graphics.h"
 #include "render.h"
 
-void render(const gameSettings settings, const gameField field) {	// TODO
+void render(const gameSettings settings, const gameField field) {
 	cleardevice();
     setcolor(LIGHTGRAY);
     for(int i = 0; i < settings.fieldW - 1; i++) {
@@ -10,7 +10,7 @@ void render(const gameSettings settings, const gameField field) {	// TODO
         line(y, 0, y, settings.windowH);
     }
     for(int i = 0; i < settings.fieldH - 1; i++) {
-        int x = CELL_SIZE_PX * (i+1) + 1;
+        int x = CELL_SIZE_PX * (i+1) + i;
         line(0, x, settings.windowW, x);
     }
 }

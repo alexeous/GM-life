@@ -67,7 +67,7 @@ enum keys { KEY_LEFT = VK_LEFT, KEY_UP = VK_UP, KEY_RIGHT = VK_RIGHT, KEY_DOWN =
 
 #define MAX_KQ_SIZE 100     // макс. кол-во элементов в очереди нажатых клавиш клавиатуры
 #define MAX_MV_SIZE 100     // макс. кол-во элементов в списке событий мыши
-#define CLOSE_FROM_CLOSEGRAPH 0xCC0
+
 
 class RegraphWindow {
 private:
@@ -82,7 +82,6 @@ private:
     void recreateFont();
     void refreshWindow();
     void refreshWindow(RECT rect);
-    void cleanup();
 
     typedef void (*putFunction)(HDC dc, int x, int y, int color);                           // тип функции вывода для putImage
     static void putCopy(HDC dc, int x, int y, int color);
@@ -98,7 +97,7 @@ public:
     int getID();
 
     bool initialize(int id, int width, int height, const char *title, bool closeflag, void (*onDestroyedFunc)(int));
-    void close();
+    void cleanup();
     void clearDevice();
 
     void sector(int x, int y, int stangle, int endangle, int xradius, int yradius);
@@ -154,7 +153,7 @@ public:
 
 private:
     enum { INIT_PROCESS, INIT_SUCCESS, INIT_FAIL };
-    int state;
+    int isInitialized;
 
     bool closeFlag;
     int id, width, height;
@@ -269,7 +268,7 @@ private:
 int COLOR(int r, int g, int b);
 int initwindow(int width, int height, const char *title = "Graphic Window",
                       int /*(unused) left*/ = 0, int /*(unused) top*/ = 0, bool /*(unused) dbflag*/ = false,
-                      bool closeflag = false);
+                      bool closeflag = true);
 
 void closegraph(int windowID = ALL_WINDOWS);
 void setcurrentwindow(int window);
@@ -316,8 +315,8 @@ int getbkcolor();
 void setbktransparent(bool transparent);
 bool getbktransparent();
 void setlinestyle(int linestyle, unsigned upattern, int thickness);
-void setfillstyle(int pattern, int color, bool transparentBk = true);
-void setfillpattern(char *upattern, int color, bool transparentBk = true);
+void setfillstyle(int pattern, int color, bool transparentBk = false);
+void setfillpattern(char *upattern, int color, bool transparentBk = false);
 void getfillpattern(char *pattern);
 
 unsigned imagesize(int left, int top, int right, int bottom);
