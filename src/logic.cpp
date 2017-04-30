@@ -14,9 +14,8 @@ void startGame(gameSettings &settings, gameField &field) {
 	}
 	for(int j = 0; j < h+2; j++)
 		field[0][j].isAlive = field[h+1][j].isAlive = false;	// заполняем клетки сверху и снизу поля
-
-	setbkcolor(WHITE);
-	cleardevice();
+	
+	setbkcolor(COLOR(230, 230, 230));
 }
 
 void logic(gameSettings &settings, gameField &field) {	// TODO

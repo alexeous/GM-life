@@ -269,7 +269,7 @@ private:
 int COLOR(int r, int g, int b);
 int initwindow(int width, int height, const char *title = "Graphic Window",
                       int /*(unused) left*/ = 0, int /*(unused) top*/ = 0, bool /*(unused) dbflag*/ = false,
-                      bool closeflag = false);
+                      bool closeflag = true);
 
 void closegraph(int windowID = ALL_WINDOWS);
 void setcurrentwindow(int window);

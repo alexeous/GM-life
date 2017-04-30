@@ -16,12 +16,12 @@ void menuSettings (const char *filename, gameSettings &settings) {
         cleardevice();
 
         settextjustify(CENTER_TEXT, CENTER_TEXT);
-        settextstyle(COMPLEX_FONT, 0, 4); setcolor(BLACK);
+        settextstyle(COMPLEX_FONT, 0, 3); setcolor(BLACK);
         outtextxy((settings.windowW) / 2,
                   (settings.windowH) / 2 - 100, (char*)"SETTINGS");
 
         settextjustify(LEFT_TEXT, CENTER_TEXT);
-        settextstyle(COMPLEX_FONT, 0, 3);
+        settextstyle(COMPLEX_FONT, 0, 2);
 
         if (menuPoint == 1) setcolor(GREEN);
         else setcolor(BLACK);
@@ -71,8 +71,8 @@ void menuSettings (const char *filename, gameSettings &settings) {
             if (menuPoint == 3) {    // Нажатие на "APPLY"
                 settings.fieldW = fieldW;
                 settings.fieldH = fieldH;
-                settings.windowW = fieldW * CELL_SIZE_PX + (fieldW - 1);    // Включая по 1 пикселю между
-                settings.windowH = fieldH * CELL_SIZE_PX + (fieldH - 1);    // клетками (сетка)
+                settings.windowW = fieldW * CELL_SIZE_PX + (fieldW - 1) * GRID_THICKNESS_PX;    // Включая сетку между
+                settings.windowH = fieldH * CELL_SIZE_PX + (fieldH - 1) * GRID_THICKNESS_PX;    // клетками
                 saveSettingsFile(filename, settings);
                 closegraph();
                 initwindow(settings.windowW, settings.windowH);
@@ -91,11 +91,11 @@ bool menu(const char *filename, gameSettings &settings) {
         cleardevice();
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 
-        settextstyle(COMPLEX_FONT, 0, 5); setcolor(BLACK);
+        settextstyle(COMPLEX_FONT, 0, 4); setcolor(BLACK);
         outtextxy((settings.windowW) / 2,
                   (settings.windowH) / 2 - 100, (char*)"GM-life");
 
-        settextstyle(COMPLEX_FONT, 0, 4);
+        settextstyle(COMPLEX_FONT, 0, 3);
         if (menuPoint == 1) setcolor(GREEN);
         else setcolor(BLACK);
         outtextxy((settings.windowW) / 2,
