@@ -10,6 +10,8 @@ struct cell {
 	bool isAlive;
 };
 
-typedef cell** gameField;
+#include "const.h"
+
+typedef cell gameField[MAX_FIELD_H+2][MAX_FIELD_W+2];	// +2 строки и столбца вокруг поля
 
 #endif // STRUCT_H

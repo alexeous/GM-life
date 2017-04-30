@@ -34,7 +34,6 @@ int main() {
 			render(settings, field);	// и рисуем поле на экране,
 			delay(1000);
 		} while (!kbhit() || getch() != 27);	// пока не нажали Escape
-		endGame(settings, field);		// закрываем игровое окно, освобождаем поле
 	}
 	return 0;
 }
