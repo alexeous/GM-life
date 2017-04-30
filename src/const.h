@@ -12,5 +12,4 @@
 const gameSettings defaultSettings = { MIN_FIELD_W, MIN_FIELD_H,
                                        MIN_FIELD_W * CELL_SIZE_PX + (MIN_FIELD_W - 1) * GRID_THICKNESS_PX,
                                        MIN_FIELD_H * CELL_SIZE_PX + (MIN_FIELD_H - 1) * GRID_THICKNESS_PX};
-
 #endif // CONST_H

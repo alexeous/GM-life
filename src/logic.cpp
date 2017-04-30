@@ -2,7 +2,7 @@
 #include "logic.h"
 #include "graphics.h"
 
-void startGame(gameSettings &settings, gameField &field) {
+void startGame(const gameSettings &settings, gameField &field) {
 	int w = settings.fieldW;
 	int h = settings.fieldH;
 	field = new cell*[h+2];			// +2 строки вокруг поля
