@@ -3,16 +3,13 @@
 #include "render.h"
 
 void render(const gameSettings settings, const gameField field) {
-	cleardevice();
-    setfillstyle(SOLID_FILL, WHITE);
-    for(int i = 0; i < settings.fieldW - 1; i++) {
-        int xstart = CELL_SIZE_PX * (i+1) + GRID_THICKNESS_PX * i;
-        int xend = xstart + GRID_THICKNESS_PX - 1;
-        bar(xstart, 0, xend, settings.windowH);
-    }
-    for(int i = 0; i < settings.fieldH - 1; i++) {
-        int ystart = CELL_SIZE_PX * (i+1) + GRID_THICKNESS_PX * i;
-        int yend = ystart + GRID_THICKNESS_PX - 1;
-        bar(0, ystart, settings.windowW, yend);
+    for(int i = 1; i <= settings.fieldH; i++) {
+        for(int j = 1; j <= settings.fieldW ; j++) {
+            if (field[i][j].isAlive) setfillstyle(SOLID_FILL, GREEN);    // клетка живая - зеленый
+            else setfillstyle(SOLID_FILL, COLOR(230, 230, 230));         // мертвая - серый
+            int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
+            int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
+            bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
+        }
     }
 }

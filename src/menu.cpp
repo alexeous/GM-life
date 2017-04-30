@@ -71,8 +71,8 @@ void menuSettings (const char *filename, gameSettings &settings) {
             if (menuPoint == 3) {    // Нажатие на "APPLY"
                 settings.fieldW = fieldW;
                 settings.fieldH = fieldH;
-                settings.windowW = fieldW * CELL_SIZE_PX + (fieldW - 1) * GRID_THICKNESS_PX;    // Включая сетку между
-                settings.windowH = fieldH * CELL_SIZE_PX + (fieldH - 1) * GRID_THICKNESS_PX;    // клетками
+                settings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;    // Включая сетку между
+                settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX;    // клетками и по краям
                 saveSettingsFile(filename, settings);
                 closegraph();
                 initwindow(settings.windowW, settings.windowH);
