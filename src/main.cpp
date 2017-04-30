@@ -25,14 +25,15 @@ int main() {
 		fflush(stdout);
 	}
 
+	initwindow(settings.windowW, settings.windowH);
 	while(menu(settingsFilename, settings)) {		// menu возвратит false, если игрок решил выйти, либо true, если решил начать игру
 		gameField field;
-		startGame(settings, field); 	// открываем игровое окно, инициализируем поле
+		startGame(settings, field); 	// инициализируем поле
 		do {
 			logic(settings, field);		// обрабатываем логику игры
 			render(settings, field);	// и рисуем поле на экране,
 		} while (!kbhit() && getch() != 27);	// пока не нажали Escape
-		endGame(settings, field);		// закрываем игровое окно, освобождаем поле
+		endGame(settings, field);		// освобождаем поле
 	}
 	return 0;
 }

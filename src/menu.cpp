@@ -86,7 +86,6 @@ bool menu(const char *filename, gameSettings &settings) {
     int menuPoint = 1;
     char key = 0;
 
-    initwindow(settings.windowW, settings.windowH);
     while (true) {
         setbkcolor(WHITE);
         cleardevice();
@@ -123,7 +122,7 @@ bool menu(const char *filename, gameSettings &settings) {
         if (key == VK_RETURN) {
             switch (menuPoint) {
             case 1:    // Нажатие на "START GAME"
-                closegraph(); return true;
+                return true;
             case 2:    // Нажатие на "SETTINGS"
                 menuSettings(filename, settings); break;
             case 3:    // Нажатие на "EXIT"

@@ -15,19 +15,15 @@ void startGame(gameSettings &settings, gameField &field) {
 	for(int j = 0; j < h+2; j++)
 		field[0][j].isAlive = field[h+1][j].isAlive = false;	// заполняем клетки сверху и снизу поля
 
-	settings.windowW = w * CELL_SIZE_PX + (w-1);	  // + по 1 пикселю на сетку между клетками
-	settings.windowH = h * CELL_SIZE_PX + (h-1);
-	initwindow(settings.windowW, settings.windowH, "GM-life");
 	setbkcolor(WHITE);
 	cleardevice();
 }
 
 void logic(gameSettings &settings, gameField &field) {	// TODO
-	
+
 }
 
 void endGame(const gameSettings settings, gameField &field) {
-	closegraph();
 	for(int i = 0; i < settings.fieldH + 2; i++)
 		delete[] field[i];
 	delete[] field;

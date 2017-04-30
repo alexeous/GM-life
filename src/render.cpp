@@ -2,8 +2,7 @@
 #include "graphics.h"
 #include "render.h"
 
-void render(const gameSettings settings, const gameField field) {
-	cleardevice();
+void render(const gameSettings settings, const gameField field) {	// TODO
     setcolor(LIGHTGRAY);
     for(int i = 0; i < settings.fieldW - 1; i++) {
         int y = CELL_SIZE_PX * (i+1) + i;
