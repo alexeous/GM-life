@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 #include "conio.h"
 #include "graphics.h"
 
@@ -21,16 +22,18 @@ int main() {
 		return 1;
 	case 2:
 		cout << "Был создан новый файл настроек, так как старый не удалось загрузить.\n";
+		fflush(stdout);
 	}
 
+	initwindow(settings.windowW, settings.windowH);
 	while(menu(settingsFilename, settings)) {		// menu возвратит false, если игрок решил выйти, либо true, если решил начать игру
 		gameField field;
-		startGame(settings, field); 	// открываем игровое окно, инициализируем поле
+		startGame(settings, field); 	// инициализируем поле
 		do {
 			logic(settings, field);		// обрабатываем логику игры
 			render(settings, field);	// и рисуем поле на экране,
-		} while (!kbhit() && getch() != 27);	// пока не нажали Escape
-		endGame();			// закрываем игровое окно, освобождаем поле
+			delay(1000);
+		} while (!kbhit() || getch() != 27);	// пока не нажали Escape
 	}
 	return 0;
 }

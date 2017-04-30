@@ -1,5 +1,5 @@
-LIBF := -Lthirdparty/lib -static-libgcc -lbgi -lgdi32 -lcomdlg32 -luuid -loleaut32 -lole32
-CF := -Wall -Werror -std=c++14 -Ithirdparty/include $(LIBF)
+LIBF := -Lthirdparty/lib -static-libgcc -static-libstdc++ -static -lregraph -lstdc++ -lgdi32
+CF := -std=c++14 -Wall -Werror -Ithirdparty/include $(LIBF)
 CF_TEST := -Isrc $(CF)
 
 OBJ_DIR := build/src

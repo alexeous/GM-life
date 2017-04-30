@@ -16,40 +16,40 @@ void menuSettings (const char *filename, gameSettings &settings) {
         cleardevice();
 
         settextjustify(CENTER_TEXT, CENTER_TEXT);
-        settextstyle(COMPLEX_FONT, 0, 4); setcolor(BLACK);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2,
-                  (settings.fieldH * CELL_SIZE_PX) / 2 - 100, (char*)"SETTINGS");
+        settextstyle(COMPLEX_FONT, 0, 3); setcolor(BLACK);
+        outtextxy((settings.windowW) / 2,
+                  (settings.windowH) / 2 - 100, (char*)"SETTINGS");
 
         settextjustify(LEFT_TEXT, CENTER_TEXT);
-        settextstyle(COMPLEX_FONT, 0, 3);
+        settextstyle(COMPLEX_FONT, 0, 2);
 
         if (menuPoint == 1) setcolor(GREEN);
         else setcolor(BLACK);
         sprintf(strFieldW, "% 3d", fieldW);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2 - 130,
-                  (settings.fieldH * CELL_SIZE_PX) / 2, (char*)"FIELD WIDTH");
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2 + 80,
-                  (settings.fieldH * CELL_SIZE_PX) / 2, strFieldW);
+        outtextxy((settings.windowW) / 2 - 130,
+                  (settings.windowH) / 2, (char*)"FIELD WIDTH");
+        outtextxy((settings.windowW) / 2 + 80,
+                  (settings.windowH) / 2, strFieldW);
 
         if (menuPoint == 2) setcolor(GREEN);
         else setcolor(BLACK);
         sprintf(strFieldH, "% 3d", fieldH);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2 - 130,
-                  (settings.fieldH * CELL_SIZE_PX) / 2 + 30, (char*)"FIELD HEIGHT");
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2 + 80,
-                  (settings.fieldH * CELL_SIZE_PX) / 2 + 30, strFieldH);
+        outtextxy((settings.windowW) / 2 - 130,
+                  (settings.windowH) / 2 + 30, (char*)"FIELD HEIGHT");
+        outtextxy((settings.windowW) / 2 + 80,
+                  (settings.windowH) / 2 + 30, strFieldH);
 
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 
         if (menuPoint == 3) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2,
-                  (settings.fieldH * CELL_SIZE_PX) / 2 + 90, (char*)"APPLY");
+        outtextxy((settings.windowW) / 2,
+                  (settings.windowH) / 2 + 90, (char*)"APPLY");
 
         if (menuPoint == 4) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2,
-                  (settings.fieldH * CELL_SIZE_PX) / 2 + 120, (char*)"MAIN MENU");
+        outtextxy((settings.windowW) / 2,
+                  (settings.windowH) / 2 + 120, (char*)"MAIN MENU");
 
         key = getch();
         if (key == KEY_DOWN) {
@@ -71,10 +71,11 @@ void menuSettings (const char *filename, gameSettings &settings) {
             if (menuPoint == 3) {    // Нажатие на "APPLY"
                 settings.fieldW = fieldW;
                 settings.fieldH = fieldH;
+                settings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;    // Включая сетку между
+                settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX;    // клетками и по краям
                 saveSettingsFile(filename, settings);
                 closegraph();
-                initwindow(settings.fieldW * CELL_SIZE_PX,
-                           settings.fieldH * CELL_SIZE_PX);
+                initwindow(settings.windowW, settings.windowH);
             }
             if (menuPoint == 4) return ;    // Нажатие на "MAIN MENU"
         }
@@ -85,31 +86,30 @@ bool menu(const char *filename, gameSettings &settings) {
     int menuPoint = 1;
     char key = 0;
 
-    initwindow(settings.fieldW * CELL_SIZE_PX, settings.fieldH * CELL_SIZE_PX);
     while (true) {
         setbkcolor(WHITE);
         cleardevice();
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 
-        settextstyle(COMPLEX_FONT, 0, 5); setcolor(BLACK);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2,
-                  (settings.fieldH * CELL_SIZE_PX) / 2 - 100, (char*)"GM-life");
+        settextstyle(COMPLEX_FONT, 0, 4); setcolor(BLACK);
+        outtextxy((settings.windowW) / 2,
+                  (settings.windowH) / 2 - 100, (char*)"GM-life");
 
-        settextstyle(COMPLEX_FONT, 0, 4);
+        settextstyle(COMPLEX_FONT, 0, 3);
         if (menuPoint == 1) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2,
-                  (settings.fieldH * CELL_SIZE_PX) / 2, (char*)"START GAME");
+        outtextxy((settings.windowW) / 2,
+                  (settings.windowH) / 2, (char*)"START GAME");
 
         if (menuPoint == 2) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2,
-                  (settings.fieldH * CELL_SIZE_PX) / 2 + 50, (char*)"SETTINGS");
+        outtextxy((settings.windowW) / 2,
+                  (settings.windowH) / 2 + 50, (char*)"SETTINGS");
 
         if (menuPoint == 3) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.fieldW * CELL_SIZE_PX) / 2,
-                  (settings.fieldH * CELL_SIZE_PX) / 2 + 100, (char*)"EXIT");
+        outtextxy((settings.windowW) / 2,
+                  (settings.windowH) / 2 + 100, (char*)"EXIT");
 
         key = getch();
         if (key == KEY_DOWN) {
@@ -122,7 +122,7 @@ bool menu(const char *filename, gameSettings &settings) {
         if (key == VK_RETURN) {
             switch (menuPoint) {
             case 1:    // Нажатие на "START GAME"
-                closegraph(); return true;
+                cleardevice(); return true;
             case 2:    // Нажатие на "SETTINGS"
                 menuSettings(filename, settings); break;
             case 3:    // Нажатие на "EXIT"

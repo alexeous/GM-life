@@ -1,362 +1,346 @@
-// The winbgim library, Version 6.0, August 9, 2004
-// Written by:
-//      Grant Macklem (Grant.Macklem@colorado.edu)
-//      Gregory Schmelter (Gregory.Schmelter@colorado.edu)
-//      Alan Schmidt (Alan.Schmidt@colorado.edu)
-//      Ivan Stashak (Ivan.Stashak@colorado.edu)
-//      Michael Main (Michael.Main@colorado.edu)
-// CSCI 4830/7818: API Programming
-// University of Colorado at Boulder, Spring 2003
+#ifndef REGRAPH_H
+#define REGRAPH_H
 
+#include <math.h>         // sin, cos
+#include <windows.h>
+#include <windowsx.h>     // GET_X_LPARAM, GET_Y_LPARAM
+#include <vector>
+#include <queue>
+#include <stdio.h>        // sprintf
+#include <conio.h>        // _getch()
 
-// ---------------------------------------------------------------------------
-//                          Notes
-// ---------------------------------------------------------------------------
-// * This library is still under development.
-// * Please see http://www.cs.colorado.edu/~main/bgi for information on
-// * using this library with the mingw32 g++ compiler.
-// * This library only works with Windows API level 4.0 and higher (Windows 95, NT 4.0 and newer)
-// * This library may not be compatible with 64-bit versions of Windows
-// ---------------------------------------------------------------------------
+enum colors {
+    BLACK = 0,
+    BLUE = RGB(0, 0, 127),
+    GREEN = RGB(0, 127, 0),
+    CYAN = RGB(0, 127, 127),
+    RED = RGB(127, 0, 0),
+    MAGENTA = RGB(127, 0, 127),
+    BROWN = RGB(90, 60, 0),
+    LIGHTGRAY = RGB(200, 200, 200),
+    DARKGRAY = RGB(100, 100, 100),
+    LIGHTBLUE = RGB(0, 0, 255),
+    LIGHTGREEN = RGB(0, 255, 0),
+    LIGHTCYAN = RGB(0, 255, 255),
+    LIGHTRED = RGB(255, 0, 0),
+    LIGHTMAGENTA = RGB(255, 0, 255),
+    YELLOW = RGB(255, 255, 0),
+    WHITE = RGB(255, 255, 255)
+};
 
+enum line_styles { SOLID_LINE = PS_SOLID, DOTTED_LINE = PS_DOT,
+    CENTER_LINE = PS_DASHDOT,
+    DASHED_LINE = PS_DASH,
+    USERBIT_LINE = PS_USERSTYLE
+};
 
-// ---------------------------------------------------------------------------
-//                          Macro Guard and Include Directives
-// ---------------------------------------------------------------------------
-#ifndef WINBGI_H
-#define WINBGI_H
-#include <windows.h>        // Provides the mouse message types
-#include <limits.h>         // Provides INT_MAX
-#include <sstream>          // Provides std::ostringstream
-// ---------------------------------------------------------------------------
+enum fill_styles {
+    EMPTY_FILL, SOLID_FILL, LINE_FILL, STICK_FILL, LTSLASH_FILL, SLASH_FILL, BKSLASH_FILL, LTBKSLASH_FILL,
+    HATCH_FILL, XHATCH_FILL, INTERLEAVE_FILL, WIDE_DOT_FILL, CLOSE_DOT_FILL, USER_FILL
+};
 
+enum horiz { LEFT_TEXT, CENTER_TEXT, RIGHT_TEXT };
+enum vertical { BOTTOM_TEXT, VCENTER_TEXT, TOP_TEXT };
 
+enum font_names {
+    DEFAULT_FONT, TRIPLEX_FONT, SMALL_FONT, SANS_SERIF_FONT, GOTHIC_FONT, SCRIPT_FONT,
+    SIMPLEX_FONT, TRIPLEX_SCR_FONT, COMPLEX_FONT, EUROPEAN_FONT, BOLD_FONT
+};
 
-// ---------------------------------------------------------------------------
-//                          Definitions
-// ---------------------------------------------------------------------------
-// Definitions for the key pad extended keys are added here.  When one
-// of these keys are pressed, getch will return a zero followed by one
-// of these values. This is the same way that it works in conio for
-// dos applications.
-#define KEY_HOME        71
-#define KEY_UP          72
-#define KEY_PGUP        73
-#define KEY_LEFT        75
-#define KEY_CENTER      76
-#define KEY_RIGHT       77
-#define KEY_END         79
-#define KEY_DOWN        80
-#define KEY_PGDN        81
-#define KEY_INSERT      82
-#define KEY_DELETE      83
-#define KEY_F1          59
-#define KEY_F2          60
-#define KEY_F3          61
-#define KEY_F4          62
-#define KEY_F5          63
-#define KEY_F6          64
-#define KEY_F7          65
-#define KEY_F8          66
-#define KEY_F9          67
+enum putimage_ops { COPY_PUT, XOR_PUT, OR_PUT, AND_PUT, NOT_PUT };
 
-// Line thickness settings
-#define NORM_WIDTH      1
-#define THICK_WIDTH     3
+enum font_attributes { BOLD = 1, ITALIC = 2, UNDERLINE = 4, STRIKEOUT = 8, ANTIALIASED = 16 };
 
-// Character Size and Direction
-#define USER_CHAR_SIZE  0
-#define HORIZ_DIR       0
+enum keys { KEY_LEFT = VK_LEFT, KEY_UP = VK_UP, KEY_RIGHT = VK_RIGHT, KEY_DOWN = VK_DOWN,
+            KEY_END = VK_END, KEY_HOME = VK_HOME, KEY_INSERT = VK_INSERT, KEY_DELETE = VK_DELETE,
+            KEY_F1 = VK_F1, KEY_F2 = VK_F2, KEY_F3 = VK_F3, KEY_F4 = VK_F4, KEY_F5 = VK_F5, KEY_F6 = VK_F6,
+            KEY_F7 = VK_F7, KEY_F8 = VK_F8, KEY_F9 = VK_F9, KEY_F10 = VK_F10, KEY_F11 = VK_F11, KEY_F12 = VK_F12 };
+
+#define CURRENT_WINDOW -1   // константы для
+#define ALL_WINDOWS -2      // initwindow
+
+#define HORIZ_DIR       0   // для settextjustify
 #define VERT_DIR        1
 
+#define DEG2RAD 0.0174532
+#define TAN_30DEG  0.5773502
 
-// Constants for closegraph
-#define CURRENT_WINDOW -1
-#define ALL_WINDOWS -2
-#define NO_CURRENT_WINDOW -3
+#define MAX_KQ_SIZE 100     // макс. кол-во элементов в очереди нажатых клавиш клавиатуры
+#define MAX_MV_SIZE 100     // макс. кол-во элементов в списке событий мыши
+#define CLOSE_FROM_CLOSEGRAPH 0xCC0
 
-// The standard Borland 16 colors
-#define MAXCOLORS       15
-enum colors { BLACK, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHTGRAY, DARKGRAY,
-              LIGHTBLUE, LIGHTGREEN, LIGHTCYAN, LIGHTRED, LIGHTMAGENTA, YELLOW, WHITE };
+class RegraphWindow {
+private:
+    typedef struct { int kind, x, y; } mouseEvent;
+private:
+    static void showLastError(const char *prefixMessage);
+    static LRESULT CALLBACK windowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    static void createAndProcess(RegraphWindow *window);
+    static bool isServiceKey(WPARAM key);
+    static bool isMouseEvent(UINT msg);
+    void recreatePen();
+    void recreateFont();
+    void refreshWindow();
+    void refreshWindow(RECT rect);
+    void cleanup();
 
-// The standard line styles
-enum line_styles { SOLID_LINE, DOTTED_LINE, CENTER_LINE, DASHED_LINE, USERBIT_LINE };
+    typedef void (*putFunction)(HDC dc, int x, int y, int color);                           // тип функции вывода для putImage
+    static void putCopy(HDC dc, int x, int y, int color);
+    static void putXor(HDC dc, int x, int y, int color);
+    static void putOr(HDC dc, int x, int y, int color);
+    static void putAnd(HDC dc, int x, int y, int color);
+    static void putNot(HDC dc, int x, int y, int color);
 
-// The standard fill styles
-enum fill_styles { EMPTY_FILL, SOLID_FILL, LINE_FILL, LTSLASH_FILL, SLASH_FILL,
-                   BKSLASH_FILL, LTBKSLASH_FILL, HATCH_FILL, XHATCH_FILL, INTERLEAVE_FILL,
-                   WIDE_DOT_FILL, CLOSE_DOT_FILL, USER_FILL };
+public:
+    RECT getWindowRect();
+    HWND getWindowHandle();
+    HDC& getDeviceContext();
+    int getID();
 
-// The various graphics drivers
-enum graphics_drivers { DETECT, CGA, MCGA, EGA, EGA64, EGAMONO, IBM8514, HERCMONO,
-                        ATT400, VGA, PC3270 };
+    bool initialize(int id, int width, int height, const char *title, bool closeflag, void (*onDestroyedFunc)(int));
+    void close();
+    void clearDevice();
 
-// Various modes for each graphics driver
-enum graphics_modes { CGAC0, CGAC1, CGAC2, CGAC3, CGAHI, 
-                      MCGAC0 = 0, MCGAC1, MCGAC2, MCGAC3, MCGAMED, MCGAHI,
-                      EGALO = 0, EGAHI,
-                      EGA64LO = 0, EGA64HI,
-                      EGAMONOHI = 3,
-                      HERCMONOHI = 0,
-                      ATT400C0 = 0, ATT400C1, ATT400C2, ATT400C3, ATT400MED, ATT400HI,
-                      VGALO = 0, VGAMED, VGAHI,
-                      PC3270HI = 0,
-                      IBM8514LO = 0, IBM8514HI };
+    void sector(int x, int y, int stangle, int endangle, int xradius, int yradius);
+    void circle(int x, int y, int radius);
+    void ellipse(int x, int y, int stangle, int endangle, int xradius, int yradius);
+    void fillEllipse(int x, int y, int xrad, int yrad);
+    void rectangle(int left, int top, int right, int bottom);
+    void bar(int left, int top, int right, int bottom);
+    void bar3d(int left, int top, int right, int bottom, int depth, int topflag);
+    void drawPoly(int numpoints, int *points);
+    void fillPoly(int numpoints, int *points);
+    void floodFill(int x, int y, int borderColor);
+    void lineTo(int x, int y);
+    void lineRel(int dx, int dy);
+    void line(int startx, int starty, int endx, int endy);
+    void moveTo(int x, int y);
+    void moveRel(int dx, int dy);
 
-// Borland error messages for the graphics window.
-#define NO_CLICK        -1      // No mouse event of the current type in getmouseclick
-enum graph_errors { grInvalidVersion = -18, grInvalidDeviceNum = -15, grInvalidFontNum,
-                    grInvalidFont, grIOerror, grError, grInvalidMode, grNoFontMem,
-                    grFontNotFound, grNoFloodMem, grNoScanMem, grNoLoadMem,
-                    grInvalidDriver, grFileNotFound, grNotDetected, grNoInitGraph,
-                    grOk };
+    void setPixel(int x, int y, int color);
+    int getPixel(int x, int y);
+    void setColor(int color);
+    int getColor();
+    void setBkColor(int backgroundColor);
+    int getBkColor();
 
-// Write modes
-enum putimage_ops{ COPY_PUT, XOR_PUT, OR_PUT, AND_PUT, NOT_PUT };
+    void outText(const char *textstring);
+    void outTextXY(int x, int y, const char *textstring);
+    void setLineStyle(int linestyle, unsigned upattern, int thickness);
+    void setFillStyle(int style, int color, bool transparentBk);
+    void setFillPattern(char *pattern, int color, bool transparentBk);
+    void getFillPattern(char* pattern);
 
-// Text Modes
-enum horiz { LEFT_TEXT, CENTER_TEXT, RIGHT_TEXT };
-enum vertical { BOTTOM_TEXT, VCENTER_TEXT, TOP_TEXT }; // middle not needed other than as seperator
-enum font_names { DEFAULT_FONT, TRIPLEX_FONT, SMALL_FONT, SANS_SERIF_FONT,
-             GOTHIC_FONT, SCRIPT_FONT, SIMPLEX_FONT, TRIPLEX_SCR_FONT,
-			 COMPLEX_FONT, EUROPEAN_FONT, BOLD_FONT };
-// ---------------------------------------------------------------------------
+    void getImage(int left, int top, int right, int bottom, void *bitmap);
+    void putImage(int left, int top, void *bitmap, int op);
 
+    void setTextStyle(int font, int direction, int charsize);
+    void setTextStyle(const char *face, int attr, int angle, int charsize);
+    void setTextJustify(int horiz, int vert);
+    int textHeight(const char *textstring);
+    int textWidth(const char *textstring);
 
+    int getMouseX();
+    int getMouseY();
+    bool isMouseClick(int kind);
+    void clearMouseClick(int kind);
+    void getMouseClick(int kind, int &x, int &y);
 
-// ---------------------------------------------------------------------------
-//                              Structures
-// ---------------------------------------------------------------------------
-// This structure records information about the last call to arc.  It is used
-// by getarccoords to get the location of the endpoints of the arc.
-struct arccoordstype
-{
-    int x, y;                   // Center point of the arc
-    int xstart, ystart;         // The starting position of the arc
-    int xend, yend;             // The ending position of the arc.
+    int getMaxX();
+    int getMaxY();
+
+    int getch();
+    int kbhit();
+
+private:
+    enum { INIT_PROCESS, INIT_SUCCESS, INIT_FAIL };
+    int state;
+
+    bool closeFlag;
+    int id, width, height;
+    char title[100], className[20];
+
+    HANDLE thread = 0;
+    HANDLE keyboardMutex = 0, mouseMutex = 0, drawMutex = 0;
+    std::queue<int> keyboardQueue;
+
+    std::vector<mouseEvent> mouseVector;
+    int mouseX = 0, mouseY = 0;
+
+    HWND windowHandle = 0;
+    HINSTANCE instanceHandle = 0;
+    HDC memDC = 0;
+    HBITMAP outputBitmap = 0;
+    HDC outputDC = 0;
+    HPEN pen = 0;
+    HFONT font = 0;
+    HBRUSH brush = 0, backgroundBrush = 0;
+
+    int mainColor = WHITE, brushColor = WHITE, backgroundColor = BLACK;
+    int penWidth = 1, penStyle = PS_SOLID;
+    DWORD penPatternCount;
+    DWORD penPattern[16];
+    char *fillPattern = NULL;
+    char fontFace[50] = "System";
+    int fontAngle_tenths = 0, fontAttr = 0, fontSize = 10;
+
+    void (*onDestroyedFunc)(int);
 };
 
+class Regraph {
+private:
+    Regraph() { }
+    static void onWindowDestroyed(int id);
+    static RegraphWindow* currentWindow();
+    static HDC* currentDC();
+public:
+    static RegraphWindow* findWindowByID(int id, int *out_index = NULL);
+    static RegraphWindow* findWindowByHWND(HWND hwnd);
 
-// This structure defines the fill style for the current window.  Pattern is
-// one of the system patterns such as SOLID_FILL.  Color is the color to
-// fill with
-struct fillsettingstype
-{
-    int pattern;                // Current fill pattern
-    int color;                  // Current fill color
+    static int initwindow(int width, int height, const char *title, bool closeflag);
+    static void closegraph(int windowID, bool doExit = false);
+    static void setcurrentwindow(int window);
+    static int getcurrentwindow();
+
+    static void sector(int x, int y, int sa, int ea, int xr, int yr);
+    static void circle(int x, int y, int radius);
+    static void ellipse(int x, int y, int sa, int ea, int xr, int yr);
+    static void rectangle(int left, int top, int right, int bottom);
+    static void bar(int left, int top, int right, int bottom);
+    static void bar3d(int left, int top, int right, int bottom, int depth, int topflag);
+    static void drawpoly(int numpoints, int *points);
+    static void fillpoly(int numpoints, int *points);
+    static void fillellipse(int x, int y, int xrad, int yrad);
+    static void floodfill(int x, int y, int borderColor);
+
+    static void cleardevice();
+    static void moveto(int x, int y);
+    static void moverel(int dx, int dy);
+    static void lineto(int x, int y);
+    static void linerel(int dx, int dy);
+    static void line(int startx, int starty, int endx, int endy);
+
+    static void outtext(const char *textstring);
+    static void outtextxy(int x, int y, const char *textstring);
+    static void settextjustify(int horiz, int vert);
+    static void settextstyle(int font, int direction, int charsize);
+    static void settextstyle(const char *face, int attr, int angle, int size);
+    static int textheight(const char *textstring);
+    static int textwidth(const char *textstring);
+
+    static int getpixel(int x, int y);
+    static void putpixel(int x, int y, int color);
+    static void setcolor(int color);
+    static int getcolor();
+    static void setbkcolor(int bkcolor);
+    static int getbkcolor();
+
+    static void setbktransparent(bool transparent);
+    static bool getbktransparent();
+    static void setlinestyle(int style, unsigned pattern, int thick);
+    static void setfillstyle(int style, int color, bool trnspBk);
+    static void setfillpattern(char *upattern, int color, bool trnspBk);
+    static void getfillpattern(char *pattern);
+
+    static void getimage(int left, int top, int right, int bottom, void *bitmap);
+    static void putimage(int left, int top, void *bitmap, int op);
+
+    static int mousex();
+    static int mousey();
+    static int ismouseclick(int kind);
+    static void clearmouseclick(int kind);
+    static void getmouseclick(int kind, int &x, int &y);
+
+    static int getx();
+    static int gety();
+    static int getwindowwidth();
+    static int getwindowheight();
+    static int getmaxx();
+    static int getmaxy();
+
+    static int getch();
+    static int kbhit();
+
+private:
+    static int currentWindowID, currentWindowIndex;
+    static std::vector<RegraphWindow> windowList;
 };
 
+int COLOR(int r, int g, int b);
+int initwindow(int width, int height, const char *title = "Graphic Window",
+                      int /*(unused) left*/ = 0, int /*(unused) top*/ = 0, bool /*(unused) dbflag*/ = false,
+                      bool closeflag = true);
 
-// This structure records information about the current line style.
-// linestyle is one of the line styles such as SOLID_LINE, upattern is a
-// 16-bit pattern for user defined lines, and thickness is the width of the
-// line in pixels.
-struct linesettingstype
-{
-    int linestyle;              // Current line style
-    unsigned upattern;          // 16-bit user line pattern
-    int thickness;              // Width of the line in pixels
-};
+void closegraph(int windowID = ALL_WINDOWS);
+void setcurrentwindow(int window);
+int getcurrentwindow();
 
+void delay(int ms);
 
-// This structure records information about the text settings.
-struct textsettingstype
-{
-    int font;                   // The font in use
-    int direction;              // Text direction
-    int charsize;               // Character size
-    int horiz;                  // Horizontal text justification
-    int vert;                   // Vertical text justification
-};
+void sector(int x, int y, int stangle, int endangle, int xrad, int yrad);
+void pieslice(int x, int y, int stangle, int endangle, int radius);
+void ellipse(int x, int y, int stangle, int endangle, int xrad, int yrad);
+void arc(int x, int y, int stangle, int endangle, int radius);
+void circle(int x, int y, int radius);
+void rectangle(int left, int top, int right, int bottom);
+void bar(int left, int top, int right, int bottom);
+void bar3d(int left, int top, int right, int bottom, int depth, int topflag);
+void drawpoly(int n_points, int *points);
+void fillpoly(int n_points, int *points);
+void fillellipse(int x, int y, int xradius, int yradius);
+void floodfill(int x, int y, int border);
 
-
-// This structure records information about the viewport
-struct viewporttype
-{
-    int left, top,              // Viewport bounding box
-        right, bottom;
-    int clip;                   // Whether to clip image to viewport
-};
-
-
-// This structure records information about the palette.
-struct palettetype
-{
-    unsigned char size;
-    signed char colors[MAXCOLORS + 1];
-};
-// ---------------------------------------------------------------------------
-
-
-
-// ---------------------------------------------------------------------------
-//                          API Entries
-// ---------------------------------------------------------------------------
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// Drawing Functions
-void arc( int x, int y, int stangle, int endangle, int radius );
-void bar( int left, int top, int right, int bottom );
-void bar3d( int left, int top, int right, int bottom, int depth, int topflag );
-void circle( int x, int y, int radius );
-void cleardevice( );
-void clearviewport( );
-void drawpoly(int n_points, int* points);
-void ellipse( int x, int y, int stangle, int endangle, int xradius, int yradius );
-void fillellipse( int x, int y, int xradius, int yradius );
-void fillpoly(int n_points, int* points);
-void floodfill( int x, int y, int border );
-void line( int x1, int y1, int x2, int y2 );
-void linerel( int dx, int dy );
-void lineto( int x, int y );
-void pieslice( int x, int y, int stangle, int endangle, int radius );
-void putpixel( int x, int y, int color );
-void rectangle( int left, int top, int right, int bottom );
-void sector( int x, int y, int stangle, int endangle, int xradius, int yradius );
-
-// Miscellaneous Functions
-int getdisplaycolor( int color );
-int converttorgb( int color );
-void delay( int msec );
-void getarccoords( arccoordstype *arccoords );
-int getbkcolor( );
-int getcolor( );
-void getfillpattern( char *pattern );
-void getfillsettings( fillsettingstype *fillinfo );
-void getlinesettings( linesettingstype *lineinfo );
-int getmaxcolor( );
-int getmaxheight( );
-int getmaxwidth( );
-int getmaxx( );
-int getmaxy( );
-bool getrefreshingbgi( );
-int getwindowheight( );
-int getwindowwidth( );
-int getpixel( int x, int y );
-void getviewsettings( viewporttype *viewport );
-int getx( );
-int gety( );
-void moverel( int dx, int dy );
-void moveto( int x, int y );
-void refreshbgi(int left, int top, int right, int bottom);
-void refreshallbgi( );    
-void setbkcolor( int color );
-void setcolor( int color );
-void setfillpattern( char *upattern, int color );
-void setfillstyle( int pattern, int color );
-void setlinestyle( int linestyle, unsigned upattern, int thickness );
-void setrefreshingbgi(bool value);
-void setviewport( int left, int top, int right, int bottom, int clip );
-void setwritemode( int mode );
-
-// Window Creation / Graphics Manipulation
-void closegraph( int wid=ALL_WINDOWS );
-void detectgraph( int *graphdriver, int *graphmode );
-void getaspectratio( int *xasp, int *yasp );
-char *getdrivername( );
-int getgraphmode( );
-int getmaxmode( );
-char *getmodename( int mode_number );
-void getmoderange( int graphdriver, int *lomode, int *himode );
-void graphdefaults( );
-char *grapherrormsg( int errorcode );
-int graphresult( );
-void initgraph( int *graphdriver, int *graphmode, char *pathtodriver );
-int initwindow
-    ( int width, int height, const char* title="Windows BGI", int left=0, int top=0, bool dbflag=false, bool closeflag=true );
-int installuserdriver( char *name, int *fp );    // Not available in WinBGI
-int installuserfont( char *name );               // Not available in WinBGI
-int registerbgidriver( void *driver );           // Not available in WinBGI
-int registerbgifont( void *font );               // Not available in WinBGI
-void restorecrtmode( );
-void setaspectratio( int xasp, int yasp );
-unsigned setgraphbufsize( unsigned bufsize );    // Not available in WinBGI
-void setgraphmode( int mode );
-void showerrorbox( const char *msg = NULL );
-
-// User Interaction
-int getch( );
-int kbhit( );
-
-// User-Controlled Window Functions (winbgi.cpp)
-int getcurrentwindow( );
-void setcurrentwindow( int window );
-    
-// Double buffering support (winbgi.cpp)
-int getactivepage( );
-int getvisualpage( );
-void setactivepage( int page );
-void setvisualpage( int page );
-void swapbuffers( );
-
-// Image Functions (drawing.cpp)
-unsigned imagesize( int left, int top, int right, int bottom );
-void getimage( int left, int top, int right, int bottom, void *bitmap );
-void putimage( int left, int top, void *bitmap, int op );
-void printimage(
-    const char* title=NULL,	
-    double width_inches=7, double border_left_inches=0.75, double border_top_inches=0.75,
-    int left=0, int top=0, int right=INT_MAX, int bottom=INT_MAX,
-    bool active=true, HWND hwnd=NULL
-    );
-void readimagefile(
-    const char* filename=NULL,
-    int left=0, int top=0, int right=INT_MAX, int bottom=INT_MAX
-    );
-void writeimagefile(
-    const char* filename=NULL,
-    int left=0, int top=0, int right=INT_MAX, int bottom=INT_MAX,
-    bool active=true, HWND hwnd=NULL
-    );
-
-// Text Functions (text.cpp)
-void gettextsettings(struct textsettingstype *texttypeinfo);
-void outtext(char *textstring);
-void outtextxy(int x, int y, char *textstring);
+void outtext(const char *textstring);
+void outtextxy(int x, int y, const char *textstring);
 void settextjustify(int horiz, int vert);
 void settextstyle(int font, int direction, int charsize);
-void setusercharsize(int multx, int divx, int multy, int divy);
-int textheight(char *textstring);
-int textwidth(char *textstring);
-extern std::ostringstream bgiout;    
-void outstream(std::ostringstream& out=bgiout);
-void outstreamxy(int x, int y, std::ostringstream& out=bgiout);    
-    
-// Mouse Functions (mouse.cpp)
-void clearmouseclick( int kind );
-void clearresizeevent( );
-void getmouseclick( int kind, int& x, int& y );
-bool ismouseclick( int kind );
-bool isresizeevent( );
-int mousex( );
-int mousey( );
-void registermousehandler( int kind, void h( int, int ) );
-void setmousequeuestatus( int kind, bool status=true );
+// более продвинутая функция для установки шрифта. Можно явно указать имя шрифта, его атрибуты, угол наклона и размер
+void settextstyle(const char *fontface, int attr, int angle, int charsize);
+int textheight(const char *textstring);
+int textwidth(const char *textstring);
 
-// Palette Functions
-palettetype *getdefaultpalette( );
-void getpalette( palettetype *palette );
-int getpalettesize( );
-void setallpalette( palettetype *palette );
-void setpalette( int colornum, int color );
-void setrgbpalette( int colornum, int red, int green, int blue );
+void cleardevice();
+void moveto(int x, int y);
+void moverel(int dx, int dy);
+void lineto(int x, int y);
+void linerel(int dx, int dy);
+void line(int startx, int starty, int endx, int endy);
 
-// Color Macros
-#define IS_BGI_COLOR(v)     ( ((v) >= 0) && ((v) < 16) )
-#define IS_RGB_COLOR(v)     ( (v) & 0x03000000 )
-#define RED_VALUE(v)        int(GetRValue( converttorgb(v) ))
-#define GREEN_VALUE(v)      int(GetGValue( converttorgb(v) ))
-#define BLUE_VALUE(v)       int(GetBValue( converttorgb(v) ))
-#undef COLOR
-int COLOR(int r, int g, int b); // No longer a macro
+void putpixel(int x, int y, int color);
+int getpixel(int x, int y);
+void setcolor(int color);
+int getcolor();
+void setbkcolor(int bkcolor);    // не очищает экран, только устанавливает цвет фона; для очистки см. cleardevice()
+int getbkcolor();
 
-#ifdef __cplusplus
-}
-#endif
-// ---------------------------------------------------------------------------
+void setbktransparent(bool transparent);
+bool getbktransparent();
+void setlinestyle(int linestyle, unsigned upattern, int thickness);
+void setfillstyle(int pattern, int color, bool transparentBk = true);
+void setfillpattern(char *upattern, int color, bool transparentBk = true);
+void getfillpattern(char *pattern);
 
-#endif // WINBGI_H
+unsigned imagesize(int left, int top, int right, int bottom);
+void getimage(int left, int top, int right, int bottom, void *bitmap);
+void putimage(int left, int top, void *bitmap, int op);
 
+int mousex();
+int mousey();
+int ismouseclick(int kind);
+void clearmouseclick(int kind);
+void getmouseclick(int kind, int &x, int &y);
+
+int getx();
+int gety();
+int getmaxheight();
+int getmaxwidth();
+int getwindowwidth();
+int getwindowheight();
+int getmaxx();
+int getmaxy();
+
+int getch(); // (см. define) коды стрелок - 37-40:  ←37  ↑38 →39 ↓40;   F1-F12 ARE 112-123
+int kbhit();
+
+//}
+#endif // REGRAPH_H
