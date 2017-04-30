@@ -192,7 +192,7 @@ private:
     Regraph() { }
     static void onWindowDestroyed(int id);
     static RegraphWindow* currentWindow();
-    static HDC& currentDC();
+    static HDC* currentDC();
 public:
     static RegraphWindow* findWindowByID(int id, int *out_index = NULL);
     static RegraphWindow* findWindowByHWND(HWND hwnd);

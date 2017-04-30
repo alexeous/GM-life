@@ -122,7 +122,7 @@ bool menu(const char *filename, gameSettings &settings) {
         if (key == VK_RETURN) {
             switch (menuPoint) {
             case 1:    // Нажатие на "START GAME"
-                return true;
+                cleardevice(); return true;
             case 2:    // Нажатие на "SETTINGS"
                 menuSettings(filename, settings); break;
             case 3:    // Нажатие на "EXIT"
