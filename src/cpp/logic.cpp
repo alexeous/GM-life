@@ -41,11 +41,20 @@ void copyField(const gameSettings settings,                      // Копиру
 void logic(const gameSettings settings, gameField &oldField, gameField &newField) {
     for(int i = 0; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
-            if ((oldField[i][j].isAlive == false)
-                    && (neighborsAlive(oldField, i, j) == 3))
-                newField[i][j].isAlive = true;    // Клетка оживает, если рядом 3 живых соседа
+            if (oldField[i][j].isAlive == false) {
+                if(neighborsAlive(oldField, i, j) == 3) {
+                    newField[i][j].isAlive = true;    // Клетка рождается, если рядом 3 живых соседа
+                }
+                else newField[i][j].isAlive = false;
+            }
+            if (oldField[i][j].isAlive == true) {
+                switch (neighborsAlive(oldField, i, j)) {
+                case 2: case 3:    // Клетка продолжает жить, если рядом 2 или 3 живых соседа
+                    newField[i][j].isAlive = true; break;
+                default: newField[i][j].isAlive = false; break; // иначе умирает
+                }
+            }
         }
-
 	}
 	copyField(settings, oldField, newField);
 }

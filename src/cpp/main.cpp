@@ -35,7 +35,7 @@ int main() {
 			logic(settings, oldField, newField);		// обрабатываем логику игры
 			render(settings, oldField);	// и рисуем поле на экране,
 			delay(1000);
-		} while (!kbhit() || getch() != 27);	// пока не нажали Escape
+		} while (!kbhit() || getch() != VK_ESCAPE);	// пока не нажали Escape
 	}
 	return 0;
 }
