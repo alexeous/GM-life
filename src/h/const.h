@@ -13,7 +13,7 @@
 #define MAX_PERIOD 5000
 #define PERIOD_STEP 100 // шаг, с которым меняется период
 
-#define PERIOD_SHOW_DURATION 2000
+#define PERIOD_SHOW_DURATION 1000
 
 #include "struct.h"
 
