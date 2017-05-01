@@ -25,13 +25,15 @@ int main() {
 		fflush(stdout);
 	}
 
-	initwindow(settings.windowW, settings.windowH);
+	initwindow(settings.windowW, settings.windowH, "GM-life");
 	while(menu(settingsFilename, settings)) {		// menu возвратит false, если игрок решил выйти, либо true, если решил начать игру
-		gameField field;
-		startGame(settings, field); 	// инициализируем поле
+		gameField oldField;    // Два поля: для сохранения текущего состояния
+		gameField newField;    // и для просчета нового хода
+		startGame(settings, oldField);    // Инициализируем поля
+		startGame(settings, newField);
 		do {
-			logic(settings, field);		// обрабатываем логику игры
-			render(settings, field);	// и рисуем поле на экране,
+			logic(settings, oldField, newField);		// обрабатываем логику игры
+			render(settings, oldField);	// и рисуем поле на экране,
 			delay(1000);
 		} while (!kbhit() || getch() != 27);	// пока не нажали Escape
 	}
