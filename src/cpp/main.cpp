@@ -26,9 +26,10 @@ int main() {
 			if(run && (getTime() - prevFrameTime > settings.period)) { // логика и рендер только раз в период
 				prevFrameTime = getTime();	// обновляем время начала текущего кадра,
 				logic(settings, field);		// обрабатываем логику игры
-				render(settings, field);	// и рисуем поле на экране.
+				render(settings, field, true);	// и рисуем поле на экране.
 			}
-			delay(30);	// задержка, чтоб не грузить процессор
+			else render(settings, field, false);
+			delay(20);	// задержка, чтоб не грузить процессор
 		} while (run);
 		saveSettingsFile(settingsFilename, settings);
 	}
