@@ -10,9 +10,9 @@ void startGame(const gameSettings &settings, gameField &field) {
 		for(int j = 1; j <= w; j++)
 			field[i][j].isAlive = (rand() % 10 >= 8);	// рандомное начальное заполнение ~20% клеток
 	}
-	for(int j = 0; j < h+2; j++)
+	for(int j = 0; j < h+2; j++) {
 		field[0][j].isAlive = field[h+1][j].isAlive = false;	// заполняем клетки сверху и снизу поля
-	
+	}
 	cleardevice();
 }
 
