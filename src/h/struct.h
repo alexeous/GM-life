@@ -4,6 +4,7 @@
 struct gameSettings {
 	int fieldW, fieldH;
 	int windowW, windowH;
+	int period;		// интервал между ходами (в миллисекундах)
 };
 
 struct cell {

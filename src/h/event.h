@@ -4,7 +4,7 @@
 #include <conio.h>
 #include <chrono>
 #include <algorithm>
-#include "struct.h"
+#include "settings.h"
 using namespace std;
 
 static chrono::steady_clock::time_point initialTime;
