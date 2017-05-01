@@ -75,7 +75,7 @@ void menuSettings (const char *filename, gameSettings &settings) {
                 settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX;    // клетками и по краям
                 saveSettingsFile(filename, settings);
                 closegraph();
-                initwindow(settings.windowW, settings.windowH);
+                initwindow(settings.windowW, settings.windowH, "GM-life");
             }
             if (menuPoint == 4) return ;    // Нажатие на "MAIN MENU"
         }
