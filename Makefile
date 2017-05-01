@@ -1,9 +1,9 @@
 LIBF := -Lthirdparty/lib -static-libgcc -static-libstdc++ -static -lregraph -lstdc++ -lgdi32
-CF := -std=c++14 -Wall -Werror -Ithirdparty/include $(LIBF)
-CF_TEST := -Isrc $(CF)
+CF := -std=c++14 -Wall -Werror -Isrc/h -Ithirdparty/include $(LIBF)
+CF_TEST := $(CF)
 
 OBJ_DIR := build/src
-SRC_DIR := src
+SRC_DIR := src/cpp
 TEST_OBJ_DIR := build/test
 TEST_SRC_DIR := test
 
