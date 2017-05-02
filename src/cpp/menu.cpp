@@ -8,8 +8,9 @@
 void menuSettings (const char *filename, gameSettings &settings) {
     int fieldW = settings.fieldW,
         fieldH = settings.fieldH,
+        population = settings.population,
         menuPoint = 1;
-    char key = 0, strFieldW[4], strFieldH[4];
+    char key = 0, strFieldW[4], strFieldH[4], strPopulation[4];
 
     while (true) {
         setbkcolor(WHITE);
@@ -39,45 +40,56 @@ void menuSettings (const char *filename, gameSettings &settings) {
         outtextxy((settings.windowW) / 2 + 80,
                   (settings.windowH) / 2 + 30, strFieldH);
 
-        settextjustify(CENTER_TEXT, CENTER_TEXT);
-
         if (menuPoint == 3) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2 + 90, (char*)"APPLY");
+        sprintf(strPopulation, "% 3d%%", population);
+        outtextxy((settings.windowW) / 2 - 130,
+                  (settings.windowH) / 2 + 60, (char*)"POPULATION");
+        outtextxy((settings.windowW) / 2 + 80,
+                  (settings.windowH) / 2 + 60, strPopulation);
+
+        settextjustify(CENTER_TEXT, CENTER_TEXT);
 
         if (menuPoint == 4) setcolor(GREEN);
         else setcolor(BLACK);
         outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2 + 120, (char*)"MAIN MENU");
+                  (settings.windowH) / 2 + 120, (char*)"APPLY");
+
+        if (menuPoint == 5) setcolor(GREEN);
+        else setcolor(BLACK);
+        outtextxy((settings.windowW) / 2,
+                  (settings.windowH) / 2 + 150, (char*)"MAIN MENU");
 
         key = getch();
         if (key == KEY_DOWN) {
-            if (menuPoint == 4) menuPoint = 1; else menuPoint++;
+            if (menuPoint == 5) menuPoint = 1; else menuPoint++;
         }
         if (key == KEY_UP) {
-            if (menuPoint == 1) menuPoint = 4; else menuPoint--;
+            if (menuPoint == 1) menuPoint = 5; else menuPoint--;
         }
         if (key == KEY_LEFT) {
             if ((menuPoint == 1) && (fieldW > MIN_FIELD_W)) fieldW--;
             if ((menuPoint == 2) && (fieldH > MIN_FIELD_H)) fieldH--;
+            if ((menuPoint == 3) && (population > MIN_POPULATION)) population -= 10;
         }
         if (key == KEY_RIGHT) {
             if ((menuPoint == 1) && (fieldW < MAX_FIELD_W)) fieldW++;
             if ((menuPoint == 2) && (fieldH < MAX_FIELD_H)) fieldH++;
+            if ((menuPoint == 3) && (population < MAX_POPULATION)) population += 10;
         }
 
         if (key == VK_RETURN) {
-            if (menuPoint == 3) {    // Нажатие на "APPLY"
+            if (menuPoint == 4) {    // Нажатие на "APPLY"
                 settings.fieldW = fieldW;
                 settings.fieldH = fieldH;
                 settings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;    // Включая сетку между
                 settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX;    // клетками и по краям
+                settings.population = population;
                 saveSettingsFile(filename, settings);
                 closegraph();
                 initwindow(settings.windowW, settings.windowH, "GM-life");
             }
-            if (menuPoint == 4) return ;    // Нажатие на "MAIN MENU"
+            if (menuPoint == 5) return ;    // Нажатие на "MAIN MENU"
         }
     }
 }

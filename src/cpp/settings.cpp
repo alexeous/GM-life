@@ -5,7 +5,9 @@
 bool validateSettings(const gameSettings settings) {
 	return (settings.fieldW >= MIN_FIELD_W && settings.fieldW <= MAX_FIELD_W) &&
 		   (settings.fieldH >= MIN_FIELD_H && settings.fieldH <= MAX_FIELD_H) &&
-		   (settings.period >= MIN_PERIOD && settings.period <= MAX_PERIOD);
+		   (settings.period >= MIN_PERIOD && settings.period <= MAX_PERIOD) &&
+		   (settings.population >= MIN_POPULATION &&
+            settings.population <= MAX_POPULATION);
 }
 
 bool loadSettingsFile(const char *filename, gameSettings &settings) {
