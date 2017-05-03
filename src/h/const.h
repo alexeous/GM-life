@@ -16,7 +16,7 @@
 #define PERIOD_SHOW_DURATION 1000
 
 #define MIN_POPULATION 10
-#define MAX_POPULATION 60
+#define MAX_POPULATION 100
 
 #include "struct.h"
 

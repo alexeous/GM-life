@@ -21,8 +21,9 @@ int main() {
 		gameField newField;    // и для просчета нового хода
 		startGame(settings, oldField);    // Инициализируем поля
 		startGame(settings, newField);
+		render(settings, oldField, true);	// Первая отрисовка перед первым просчётом поля
 		bool run = true;
-		long prevFrameTime = getTime() - MAX_PERIOD - 1000;
+		long prevFrameTime = getTime();
 		do {
 			event(settings, run);			// обрабатываем события (клавиатура)
 			if(run && (getTime() - prevFrameTime > settings.period)) { // логика и рендер только раз в период
