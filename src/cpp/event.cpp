@@ -10,7 +10,7 @@ long getTime() {
 }
 
 void event(gameSettings &settings, bool &run) {
-    if(kbhit())
+    while(kbhit())
         switch(getch()) {
             case 27:    run = false;    break;      // 27 - Esc
             case '-':   settings.period = min(settings.period + PERIOD_STEP, MAX_PERIOD); break;

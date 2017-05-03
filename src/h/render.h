@@ -3,7 +3,8 @@
 
 #include "struct.h"
 
-void outPeriod(const gameSettings settings, const gameField field);
-void render(const gameSettings settings, const gameField field, bool drawField);
+void outPeriod(const gameSettings settings);
+void renderField(const gameSettings settings, const gameField field);
+void renderStatusBar(const gameSettings settings);
 
 #endif // RENDER_H

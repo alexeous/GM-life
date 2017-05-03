@@ -83,7 +83,8 @@ void menuSettings (const char *filename, gameSettings &settings) {
                 settings.fieldW = fieldW;
                 settings.fieldH = fieldH;
                 settings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;    // Включая сетку между
-                settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX;    // клетками и по краям
+                settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX     // клетками и по краям
+                                    + STATUS_BAR_HEIGHT;    
                 settings.population = population;
                 saveSettingsFile(filename, settings);
                 closegraph();
