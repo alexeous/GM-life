@@ -20,6 +20,7 @@ int main() {
 		gameField field;
 		startGame(settings, field);
 		renderField(settings, field);	// Первая отрисовка перед первым просчётом поля
+		renderStatusBar(settings, true); // принудительная перерисовка
 		bool run = true;
 		long prevFrameTime = getTime();
 		do {
