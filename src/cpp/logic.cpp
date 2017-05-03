@@ -29,12 +29,11 @@ int neighborsAlive(const gameField field, const int h, const int w) {    // Сч
     return neighbors;
 }
 
-void copyField(const gameSettings settings,                      // Копирует значения из
-               gameField &oldField, const gameField &newField) { // newField в oldField
+// Копирует поле из src в dest
+void copyField(const gameSettings settings, gameField &dest, const gameField src) {
     for(int i = 1; i <= settings.fieldH; i++) {
-        for(int j = 1; j <= settings.fieldW; j++) {
-            oldField[i][j].isAlive = newField[i][j].isAlive;
-        }
+        size_t size = sizeof(cell) * (settings.fieldW + 2); // вычисляем, сколько байт скопировать
+        memcpy(dest[i], src[i], size);  // копируем сразу целую строку
     }
 }
 

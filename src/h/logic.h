@@ -5,8 +5,7 @@
 
 void startGame(const gameSettings settings, gameField &field);
 void logic(const gameSettings settings, gameField &oldField, gameField &newField);
-int neighborsAlive(const gameField field, const int h, const int w);    // Считает живых соседей
-void copyField(const gameSettings settings,                      // Копирует значения из
-               gameField &oldField, const gameField &newField);  // newField в oldField
+int neighborsAlive(const gameField field, const int h, const int w); 
+void copyField(const gameSettings settings, gameField &dest, const gameField src);  // РєРѕРїРёСЂСѓРµС‚ РїРѕР»Рµ РёР· src РІ dest
 
 #endif // LOGIC_H
