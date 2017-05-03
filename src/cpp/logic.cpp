@@ -37,21 +37,15 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
     }
 }
 
-void logic(const gameSettings settings, gameField &oldField, gameField &newField) {
+void logic(const gameSettings settings, gameField &oldField) {
+    static gameField newField;
     for(int i = 0; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
-            if (oldField[i][j].isAlive == false) {
-                if(neighborsAlive(oldField, i, j) == 3) {
-                    newField[i][j].isAlive = true;    // Клетка рождается, если рядом 3 живых соседа
-                }
-                else newField[i][j].isAlive = false;
-            }
-            if (oldField[i][j].isAlive == true) {
-                switch (neighborsAlive(oldField, i, j)) {
-                case 2: case 3:    // Клетка продолжает жить, если рядом 2 или 3 живых соседа
-                    newField[i][j].isAlive = true; break;
-                default: newField[i][j].isAlive = false; break; // иначе умирает
-                }
+            int neighbors = neighborsAlive(oldField, i, j);
+            if (oldField[i][j].isAlive == false) { // рождается, если 3 живых соседа, иначе остаётся мертвой:
+                newField[i][j].isAlive = (neighbors == 3);
+            } else {    // продолжает жить, только если рядом 2 или 3 живых соседа, иначе умирает:
+                newField[i][j].isAlive = (neighbors == 2) || (neighbors == 3);
             }
         }
 	}
