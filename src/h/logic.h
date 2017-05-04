@@ -1,6 +1,8 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 
+#include <stdlib.h>
+#include <string.h>
 #include "struct.h"
 
 void startGame(const gameSettings settings, gameField &field);
