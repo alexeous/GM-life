@@ -1,5 +1,9 @@
-LIBF := -Lthirdparty/lib -static-libgcc -static-libstdc++ -static -lregraph -lstdc++ -lgdi32
-CF := -std=c++14 -Wall -Werror -Isrc/h -Ithirdparty/include $(LIBF)
+ifeq ($(shell uname -o), Linux)
+	CF := -std=c++14 -Wall -Werror -Isrc/h -Ithirdparty/include_linux
+else
+    LIBF := -Lthirdparty/lib -static-libgcc -static-libstdc++ -static -lregraph -lstdc++ -lgdi32
+	CF := -std=c++14 -Wall -Werror -Isrc/h -Ithirdparty/include $(LIBF)
+endif
 CF_TEST := $(CF)
 
 OBJ_DIR := build/src
