@@ -2,7 +2,6 @@
 #include "const.h"
 #include "settings.h"
 #include "graphics.h"
-#include "conio.h"
 #include <stdio.h>
 
 void menuSettings (const char *filename, gameSettings &settings) {

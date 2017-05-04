@@ -1,7 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include <conio.h>
+#include "graphics.h"
 #include <chrono>
 #include <algorithm>
 #include "settings.h"

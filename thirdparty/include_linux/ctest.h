@@ -1,4 +1,4 @@
-/* Copyright 2011-2016 Bas van den Berg
+/* Copyright 2011-2017 Bas van den Berg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,15 +85,17 @@ struct ctest {
         .skip = tskip, \
         .magic = CTEST_IMPL_MAGIC }
 
-#define CTEST_DATA(sname) struct CTEST_IMPL_NAME(sname##_data)
-
 #define CTEST_SETUP(sname) \
-    void CTEST_IMPL_WEAK CTEST_IMPL_NAME(sname##_setup)(struct CTEST_IMPL_NAME(sname##_data)* data); \
     void CTEST_IMPL_WEAK CTEST_IMPL_NAME(sname##_setup)(struct CTEST_IMPL_NAME(sname##_data)* data)
 
 #define CTEST_TEARDOWN(sname) \
-    void CTEST_IMPL_WEAK CTEST_IMPL_NAME(sname##_teardown)(struct CTEST_IMPL_NAME(sname##_data)* data); \
     void CTEST_IMPL_WEAK CTEST_IMPL_NAME(sname##_teardown)(struct CTEST_IMPL_NAME(sname##_data)* data)
+
+#define CTEST_DATA(sname) \
+    struct CTEST_IMPL_NAME(sname##_data); \
+    CTEST_SETUP(sname); \
+    CTEST_TEARDOWN(sname); \
+    struct CTEST_IMPL_NAME(sname##_data)
 
 #define CTEST_IMPL_CTEST(sname, tname, tskip) \
     static void CTEST_IMPL_FNAME(sname, tname)(void); \
@@ -109,11 +111,9 @@ struct ctest {
 #endif
 
 #define CTEST_IMPL_CTEST2(sname, tname, tskip) \
-    static struct CTEST_IMPL_NAME(sname##_data) CTEST_IMPL_NAME(sname##_data); \
-    CTEST_SETUP(sname); \
-    CTEST_TEARDOWN(sname); \
+    static struct CTEST_IMPL_NAME(sname##_data) CTEST_IMPL_NAME(sname##_##tname##_data); \
     static void CTEST_IMPL_FNAME(sname, tname)(struct CTEST_IMPL_NAME(sname##_data)* data); \
-    CTEST_IMPL_STRUCT(sname, tname, tskip, &CTEST_IMPL_NAME(sname##_data), CTEST_IMPL_SETUP_FNAME(sname), CTEST_IMPL_TEARDOWN_FNAME(sname)); \
+    CTEST_IMPL_STRUCT(sname, tname, tskip, &CTEST_IMPL_NAME(sname##_##tname##_data), CTEST_IMPL_SETUP_FNAME(sname), CTEST_IMPL_TEARDOWN_FNAME(sname)); \
     static void CTEST_IMPL_FNAME(sname, tname)(struct CTEST_IMPL_NAME(sname##_data)* data)
 
 
@@ -304,11 +304,11 @@ void assert_data(const unsigned char* exp, size_t expsize,
                  const char* caller, int line) {
     size_t i;
     if (expsize != realsize) {
-        CTEST_ERR("%s:%d  expected %I64u bytes, got %I64u", caller, line, (uintmax_t) expsize, (uintmax_t) realsize);
+        CTEST_ERR("%s:%d  expected %" PRIuMAX " bytes, got %" PRIuMAX, caller, line, (uintmax_t) expsize, (uintmax_t) realsize);
     }
     for (i=0; i<expsize; i++) {
         if (exp[i] != real[i]) {
-            CTEST_ERR("%s:%d expected 0x%02x at offset %I64u got 0x%02x",
+            CTEST_ERR("%s:%d expected 0x%02x at offset %" PRIuMAX " got 0x%02x",
                 caller, line, exp[i], (uintmax_t) i, real[i]);
         }
     }
@@ -316,31 +316,31 @@ void assert_data(const unsigned char* exp, size_t expsize,
 
 void assert_equal(intmax_t exp, intmax_t real, const char* caller, int line) {
     if (exp != real) {
-        CTEST_ERR("%s:%d  expected %I64d, got %I64d", caller, line, exp, real);
+        CTEST_ERR("%s:%d  expected %" PRIdMAX ", got %" PRIdMAX, caller, line, exp, real);
     }
 }
 
 void assert_equal_u(uintmax_t exp, uintmax_t real, const char* caller, int line) {
     if (exp != real) {
-        CTEST_ERR("%s:%d  expected %I64u, got %I64u", caller, line, exp, real);
+        CTEST_ERR("%s:%d  expected %" PRIuMAX ", got %" PRIuMAX, caller, line, exp, real);
     }
 }
 
 void assert_not_equal(intmax_t exp, intmax_t real, const char* caller, int line) {
     if ((exp) == (real)) {
-        CTEST_ERR("%s:%d  should not be %I64d", caller, line, real);
+        CTEST_ERR("%s:%d  should not be %" PRIdMAX, caller, line, real);
     }
 }
 
 void assert_not_equal_u(uintmax_t exp, uintmax_t real, const char* caller, int line) {
     if ((exp) == (real)) {
-        CTEST_ERR("%s:%d  should not be %I64u", caller, line, real);
+        CTEST_ERR("%s:%d  should not be %" PRIuMAX, caller, line, real);
     }
 }
 
 void assert_interval(intmax_t exp1, intmax_t exp2, intmax_t real, const char* caller, int line) {
     if (real < exp1 || real > exp2) {
-        CTEST_ERR("%s:%d  expected %I64d-%I64d, got %I64d", caller, line, exp1, exp2, real);
+        CTEST_ERR("%s:%d  expected %" PRIdMAX "-%" PRIdMAX ", got %" PRIdMAX, caller, line, exp1, exp2, real);
     }
 }
 
@@ -552,7 +552,7 @@ int ctest_main(int argc, const char *argv[])
 
     const char* color = (num_fail) ? ANSI_BRED : ANSI_GREEN;
     char results[80];
-    sprintf(results, "RESULTS: %d tests (%d ok, %d failed, %d skipped) ran in %I64u ms", total, num_ok, num_fail, num_skip, (t2 - t1)/1000);
+    sprintf(results, "RESULTS: %d tests (%d ok, %d failed, %d skipped) ran in %" PRIu64 " ms", total, num_ok, num_fail, num_skip, (t2 - t1)/1000);
     color_print(color, results);
     return num_fail;
 }

@@ -1,8 +1,9 @@
-ifeq ($(shell uname -o), Linux)
-	CF := -std=c++14 -Wall -Werror -Isrc/h -Ithirdparty/include_linux
+ifeq ($(shell uname -o), GNU/Linux)
+    LIBF := -Lthirdparty/lib_linux -lregraph
+    CF := -std=c++14 -Wall -Werror -Isrc/h -Ithirdparty/include_linux $(LIBF)
 else
     LIBF := -Lthirdparty/lib -static-libgcc -static-libstdc++ -static -lregraph -lstdc++ -lgdi32
-	CF := -std=c++14 -Wall -Werror -Isrc/h -Ithirdparty/include $(LIBF)
+    CF := -std=c++14 -Wall -Werror -Isrc/h -Ithirdparty/include $(LIBF)
 endif
 CF_TEST := $(CF)
 
