@@ -304,11 +304,11 @@ void assert_data(const unsigned char* exp, size_t expsize,
                  const char* caller, int line) {
     size_t i;
     if (expsize != realsize) {
-        CTEST_ERR("%s:%d  expected %" PRIuMAX " bytes, got %" PRIuMAX, caller, line, (uintmax_t) expsize, (uintmax_t) realsize);
+        CTEST_ERR("%s:%d  expected %lu bytes, got %lu", caller, line, (uintmax_t) expsize, (uintmax_t) realsize);
     }
     for (i=0; i<expsize; i++) {
         if (exp[i] != real[i]) {
-            CTEST_ERR("%s:%d expected 0x%02x at offset %" PRIuMAX " got 0x%02x",
+            CTEST_ERR("%s:%d expected 0x%02x at offset %lu got 0x%02x",
                 caller, line, exp[i], (uintmax_t) i, real[i]);
         }
     }
@@ -316,31 +316,31 @@ void assert_data(const unsigned char* exp, size_t expsize,
 
 void assert_equal(intmax_t exp, intmax_t real, const char* caller, int line) {
     if (exp != real) {
-        CTEST_ERR("%s:%d  expected %" PRIdMAX ", got %" PRIdMAX, caller, line, exp, real);
+        CTEST_ERR("%s:%d  expected %ld, got %ld", caller, line, exp, real);
     }
 }
 
 void assert_equal_u(uintmax_t exp, uintmax_t real, const char* caller, int line) {
     if (exp != real) {
-        CTEST_ERR("%s:%d  expected %" PRIuMAX ", got %" PRIuMAX, caller, line, exp, real);
+        CTEST_ERR("%s:%d  expected %lu, got %lu", caller, line, exp, real);
     }
 }
 
 void assert_not_equal(intmax_t exp, intmax_t real, const char* caller, int line) {
     if ((exp) == (real)) {
-        CTEST_ERR("%s:%d  should not be %" PRIdMAX, caller, line, real);
+        CTEST_ERR("%s:%d  should not be %ld", caller, line, real);
     }
 }
 
 void assert_not_equal_u(uintmax_t exp, uintmax_t real, const char* caller, int line) {
     if ((exp) == (real)) {
-        CTEST_ERR("%s:%d  should not be %" PRIuMAX, caller, line, real);
+        CTEST_ERR("%s:%d  should not be %lu", caller, line, real);
     }
 }
 
 void assert_interval(intmax_t exp1, intmax_t exp2, intmax_t real, const char* caller, int line) {
     if (real < exp1 || real > exp2) {
-        CTEST_ERR("%s:%d  expected %" PRIdMAX "-%" PRIdMAX ", got %" PRIdMAX, caller, line, exp1, exp2, real);
+        CTEST_ERR("%s:%d  expected %ld-%ld, got %ld", caller, line, exp1, exp2, real);
     }
 }
 
@@ -552,7 +552,7 @@ int ctest_main(int argc, const char *argv[])
 
     const char* color = (num_fail) ? ANSI_BRED : ANSI_GREEN;
     char results[80];
-    sprintf(results, "RESULTS: %d tests (%d ok, %d failed, %d skipped) ran in %" PRIu64 " ms", total, num_ok, num_fail, num_skip, (t2 - t1)/1000);
+    sprintf(results, "RESULTS: %d tests (%d ok, %d failed, %d skipped) ran in %lu ms", total, num_ok, num_fail, num_skip, (t2 - t1)/1000);
     color_print(color, results);
     return num_fail;
 }
