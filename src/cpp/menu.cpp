@@ -2,6 +2,7 @@
 #include "const.h"
 #include "settings.h"
 #include "graphics.h"
+#include "stdio.h"
 
 void centralString(const gameSettings settings, const int height, const char *text) {
     int centerW = settings.windowW / 2,

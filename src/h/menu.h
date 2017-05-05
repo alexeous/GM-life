@@ -9,6 +9,6 @@ bool applyChanges(const int fieldW, const int fieldH, const int population,
                   const char *filename, gameSettings &settings);
 void centralString(const gameSettings settings, const int height, const char *text);
 void settingMenuString(const gameSettings settings, const int number,
-                       const char *textLeft, const char *textRight)
+                       const char *textLeft, const char *textRight);
 
 #endif // MENU_H
