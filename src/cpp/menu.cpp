@@ -2,9 +2,42 @@
 #include "const.h"
 #include "settings.h"
 #include "graphics.h"
-#include <stdio.h>
 
-void menuSettings (const char *filename, gameSettings &settings) {
+void centralString(const gameSettings settings, const int height, const char *text) {
+    int centerW = settings.windowW / 2,
+        centerH = settings.windowH / 2;
+    outtextxy(centerW, centerH + height, (char*)text);
+}
+
+// number - номер пункта, textLeft - название параметра, textRight - значение параметра
+void settingMenuString(const gameSettings settings, const int number,
+                       const char *textLeft, const char *textRight) {
+    int centerW = settings.windowW / 2,
+        centerH = settings.windowH / 2;
+    const int firstPos = centerH,   // Позиция первого пункта меню
+              slipL = 130, slipR = 80,   // Смещение влево и вправо относительно центра
+              strHeight = 30;
+    outtextxy(centerW - slipL, firstPos + strHeight * (number - 1), (char*)textLeft);
+    outtextxy(centerW + slipR, firstPos + strHeight * (number - 1), (char*)textRight);
+}
+
+bool applyChanges(const int fieldW, const int fieldH, const int population,
+                  const char *filename, gameSettings &settings) {
+    settings.fieldW = fieldW;
+    settings.fieldH = fieldH;
+    settings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;
+    settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX
+                                                            + STATUS_BAR_HEIGHT;
+    settings.population = population;
+    if (validateSettings(settings)) {
+        saveSettingsFile(filename, settings);
+        closegraph();
+        initwindow(settings.windowW, settings.windowH, "GM-life");
+        return true;
+    } else return false;    // Если настройки приняли недопустимые значения
+}
+
+void menuSettings(const char *filename, gameSettings &settings) {
     int fieldW = settings.fieldW,
         fieldH = settings.fieldH,
         population = settings.population,
@@ -17,47 +50,35 @@ void menuSettings (const char *filename, gameSettings &settings) {
 
         settextjustify(CENTER_TEXT, CENTER_TEXT);
         settextstyle(COMPLEX_FONT, 0, 3); setcolor(BLACK);
-        outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2 - 100, (char*)"SETTINGS");
+        centralString(settings, -100, "SETTINGS");
 
         settextjustify(LEFT_TEXT, CENTER_TEXT);
         settextstyle(COMPLEX_FONT, 0, 2);
 
         if (menuPoint == 1) setcolor(GREEN);
-        else setcolor(BLACK);
+            else setcolor(BLACK);
         sprintf(strFieldW, "% 3d", fieldW);
-        outtextxy((settings.windowW) / 2 - 130,
-                  (settings.windowH) / 2, (char*)"FIELD WIDTH");
-        outtextxy((settings.windowW) / 2 + 80,
-                  (settings.windowH) / 2, strFieldW);
+        settingMenuString (settings, 1, "FIELD WIDTH", strFieldW);
 
         if (menuPoint == 2) setcolor(GREEN);
-        else setcolor(BLACK);
+            else setcolor(BLACK);
         sprintf(strFieldH, "% 3d", fieldH);
-        outtextxy((settings.windowW) / 2 - 130,
-                  (settings.windowH) / 2 + 30, (char*)"FIELD HEIGHT");
-        outtextxy((settings.windowW) / 2 + 80,
-                  (settings.windowH) / 2 + 30, strFieldH);
+        settingMenuString (settings, 2, "FIELD HEIGHT", strFieldH);
 
         if (menuPoint == 3) setcolor(GREEN);
-        else setcolor(BLACK);
+            else setcolor(BLACK);
         sprintf(strPopulation, "% 3d%%", population);
-        outtextxy((settings.windowW) / 2 - 130,
-                  (settings.windowH) / 2 + 60, (char*)"POPULATION");
-        outtextxy((settings.windowW) / 2 + 80,
-                  (settings.windowH) / 2 + 60, strPopulation);
+        settingMenuString (settings, 3, "POPULATION", strPopulation);
 
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 
         if (menuPoint == 4) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2 + 120, (char*)"APPLY");
+        centralString(settings, 120, "APPLY");
 
         if (menuPoint == 5) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2 + 150, (char*)"MAIN MENU");
+        centralString(settings, 150, "MAIN MENU");
 
         key = getch();
         if (key == KEY_DOWN) {
@@ -79,15 +100,7 @@ void menuSettings (const char *filename, gameSettings &settings) {
 
         if (key == VK_RETURN) {
             if (menuPoint == 4) {    // Нажатие на "APPLY"
-                settings.fieldW = fieldW;
-                settings.fieldH = fieldH;
-                settings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;    // Включая сетку между
-                settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX     // клетками и по краям
-                                    + STATUS_BAR_HEIGHT;    
-                settings.population = population;
-                saveSettingsFile(filename, settings);
-                closegraph();
-                initwindow(settings.windowW, settings.windowH, "GM-life");
+                applyChanges(fieldW, fieldH, population, filename, settings);
             }
             if (menuPoint == 5) return ;    // Нажатие на "MAIN MENU"
         }
@@ -104,24 +117,20 @@ bool menu(const char *filename, gameSettings &settings) {
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 
         settextstyle(COMPLEX_FONT, 0, 4); setcolor(BLACK);
-        outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2 - 100, (char*)"GM-life");
+        centralString(settings, -100, "GM-life");
 
         settextstyle(COMPLEX_FONT, 0, 3);
         if (menuPoint == 1) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2, (char*)"START GAME");
+        centralString(settings, 0, "START GAME");
 
         if (menuPoint == 2) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2 + 50, (char*)"SETTINGS");
+        centralString(settings, 50, "SETTINGS");
 
         if (menuPoint == 3) setcolor(GREEN);
         else setcolor(BLACK);
-        outtextxy((settings.windowW) / 2,
-                  (settings.windowH) / 2 + 100, (char*)"EXIT");
+        centralString(settings, 100, "EXIT");
 
         key = getch();
         if (key == KEY_DOWN) {
