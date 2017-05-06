@@ -1,6 +1,9 @@
 #ifndef MENU_H
 #define MENU_H
 
+#define MAIN_MENU_POINTS 3
+#define SETT_MENU_POINTS 5
+
 #include "struct.h"
 
 bool menu(const char *filename, gameSettings &settings);	// false - выход, true - запуск игры
