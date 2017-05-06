@@ -39,7 +39,7 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
 
 void logic(const gameSettings settings, gameField &oldField) {
     static gameField newField;
-    for(int i = 0; i <= settings.fieldH; i++) {
+    for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
             int neighbors = neighborsAlive(oldField, i, j);
             if (oldField[i][j].isAlive == false) { // рождается, если 3 живых соседа, иначе остаётся мертвой:

@@ -31,7 +31,7 @@ int main() {
 				renderField(settings, field);	// и рисуем поле на экране.
 			}
 			renderStatusBar(settings);
-			delay(80);	// задержка, чтоб не грузить процессор
+			delay(40);	// задержка, чтоб не грузить процессор
 		} while (run);
 		saveSettingsFile(settingsFilename, settings);
 	}
