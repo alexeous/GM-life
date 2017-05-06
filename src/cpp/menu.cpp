@@ -24,13 +24,15 @@ void settingMenuString(const gameSettings settings, const int number,
 
 bool applyChanges(const int fieldW, const int fieldH, const int population,
                   const char *filename, gameSettings &settings) {
-    settings.fieldW = fieldW;
-    settings.fieldH = fieldH;
-    settings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;
-    settings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX
+    gameSettings tempSettings = settings;
+    tempSettings.fieldW = fieldW;
+    tempSettings.fieldH = fieldH;
+    tempSettings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;
+    tempSettings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX
                                                             + STATUS_BAR_HEIGHT;
-    settings.population = population;
-    if (validateSettings(settings)) {
+    tempSettings.population = population;
+    if (validateSettings(tempSettings)) {
+        settings = tempSettings;
         saveSettingsFile(filename, settings);
         closegraph();
         initwindow(settings.windowW, settings.windowH, "GM-life");
