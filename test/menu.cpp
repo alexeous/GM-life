@@ -1,10 +1,9 @@
-#define CTEST_COLOR_OK
-
+#include <stdio.h>
 #include "ctest.h"
 #include "menu.h"
 
 CTEST(menu_suite, applying_changes) {
-    const char filename[] = "settings";
+    const char filename[] = "test/settings_files/test_settings";
     gameSettings settings {
 	    defaultSettings.fieldW, defaultSettings.fieldH,
         defaultSettings.windowW, defaultSettings.windowH,
@@ -35,4 +34,6 @@ CTEST(menu_suite, applying_changes) {
 
     fieldW = MAX_FIELD_W, fieldH = MAX_FIELD_H, population = MAX_POPULATION + 1;
     ASSERT_FALSE(applyChanges(fieldW, fieldH, population, filename, settings));
+
+    remove(filename);
 }
