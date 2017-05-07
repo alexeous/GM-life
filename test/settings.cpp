@@ -1,5 +1,3 @@
-#define CTEST_COLOR_OK
-
 #include "ctest.h"
 #include "settings.h"
 
@@ -35,4 +33,15 @@ CTEST(settings_suite, validation) {
 
     settings = {MAX_FIELD_W, MAX_FIELD_H, 0, 0, MAX_PERIOD, MAX_POPULATION + 1};
     ASSERT_FALSE(validateSettings(settings));
+}
+
+CTEST(settings_suite, loading) {
+    const char nonexistentFilename[] = "####__NONEXISTENT_SETTINGS__####";
+    const char emptyFilename[] = "test/settings_files/empty_settings";
+    const char workingFilename[] = "test/settings_files/working_settings";
+    gameSettings settings;
+
+    ASSERT_FALSE(loadSettingsFile(nonexistentFilename, settings));
+    ASSERT_FALSE(loadSettingsFile(emptyFilename, settings));
+    ASSERT_TRUE(loadSettingsFile(workingFilename, settings));
 }
