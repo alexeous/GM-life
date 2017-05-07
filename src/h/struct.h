@@ -8,8 +8,11 @@ struct gameSettings {
 	int population;    // Численность популяции (в процентах)
 };
 
+typedef signed char sbyte;
+
 struct cell {
 	bool isAlive;
+	sbyte health;
 };
 
 #include "const.h"

@@ -8,7 +8,9 @@ void startGame(const gameSettings settings, gameField &field) {
 	for(int i = 0; i < h+2; i++) {
 		field[i][0].isAlive = field[i][w+1].isAlive = false;	// заполняем клетки по бокам поля
 		for(int j = 1; j <= w; j++)
-			field[i][j].isAlive = (rand() % 100 < settings.population);
+            if(rand() % 100 < settings.population) 
+                bornCell(field, i, j);
+            else field[i][j].isAlive = false;
 	}
 	for(int j = 0; j < w+2; j++) {
 		field[0][j].isAlive = field[h+1][j].isAlive = false;	// заполняем клетки сверху и снизу поля
@@ -37,15 +39,26 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
     }
 }
 
+void bornCell(gameField &field, const int h, const int w) {
+    field[h][w].isAlive = true;
+    field[h][w].health = 1;
+}
+
+void harmCell(gameField &field, const int h, const int w) {
+    if(--field[h][w].health <= 0)
+        field[h][w].isAlive = false;
+}
+
 void logic(const gameSettings settings, gameField &oldField) {
-    static gameField newField;
+    gameField newField;
+    copyField(settings, newField, oldField);
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
             int neighbors = neighborsAlive(oldField, i, j);
-            if (oldField[i][j].isAlive == false) { // рождается, если 3 живых соседа, иначе остаётся мертвой:
-                newField[i][j].isAlive = (neighbors == 3);
-            } else {    // продолжает жить, только если рядом 2 или 3 живых соседа, иначе умирает:
-                newField[i][j].isAlive = (neighbors == 2) || (neighbors == 3);
+            if (oldField[i][j].isAlive == false) { // Рождается, если 3 живых соседа, иначе остаётся мертвой:
+                if(neighbors == 3) bornCell(newField, i, j);
+            } else {    // Теряет здоровье, когда меньше 2 или больше 3 соседей:
+                if(neighbors < 2 || neighbors > 3) harmCell(newField, i, j);
             }
         }
 	}
