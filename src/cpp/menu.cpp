@@ -15,8 +15,8 @@ void settingMenuString(const gameSettings settings, const int number,
                        const char *textLeft, const char *textRight) {
     int centerW = settings.windowW / 2,
         centerH = settings.windowH / 2;
-    const int firstPos = centerH,   // Позиция первого пункта меню
-              slipL = 130, slipR = 80,   // Смещение влево и вправо относительно центра
+    const int firstPos = centerH - 30,   // Позиция первого пункта меню
+              slipL = 150, slipR = 100,   // Смещение влево и вправо относительно центра
               strHeight = 30;
     outtextxy(centerW - slipL, firstPos + strHeight * (number - 1), (char*)textLeft);
     outtextxy(centerW + slipR, firstPos + strHeight * (number - 1), (char*)textRight);
@@ -44,6 +44,47 @@ bool applyChanges(const int fieldW, const int fieldH, const int population,
 #define HIGHLIGHT_IF_CHOSEN(number) setcolor((number) == menuPoint ? GREEN : BLACK)
 // Сокращённый в одну строку sprintf
 #define FORMAT(format, ...) (sprintf(buffer, (format), ##__VA_ARGS__), buffer)
+
+void menuGene(const char *filename, gameSettings &settings) {
+    int menuPoint = 1;
+    char key;
+
+    while(true) {
+        setbkcolor(WHITE);
+        cleardevice();
+
+        settextjustify(CENTER_TEXT, CENTER_TEXT);
+        settextstyle(COMPLEX_FONT, 0, 3); setcolor(BLACK);
+        centralString(settings, -100, "GENE SETTINGS");
+
+        settextjustify(LEFT_TEXT, CENTER_TEXT);
+        settextstyle(COMPLEX_FONT, 0, 2);
+
+        HIGHLIGHT_IF_CHOSEN(1);
+        settingMenuString (settings, 1, "SOCIALITY GENE", "OFF");
+        HIGHLIGHT_IF_CHOSEN(2);
+        settingMenuString (settings, 2, "SURVIVAL GENE", "OFF");
+        HIGHLIGHT_IF_CHOSEN(3);
+        settingMenuString (settings, 3, "LAZINESS GENE", "OFF");
+
+        settextjustify(CENTER_TEXT, CENTER_TEXT);
+
+        HIGHLIGHT_IF_CHOSEN(4);
+        centralString(settings, 85, "APPLY");
+        HIGHLIGHT_IF_CHOSEN(5);
+        centralString(settings, 115, "BACK");
+
+        key = getch();
+        switch(key) {
+            case KEY_DOWN:  if (++menuPoint > GENE_MENU_POINTS) menuPoint = 1; break;
+            case KEY_UP:    if (--menuPoint < 1) menuPoint = GENE_MENU_POINTS; break;
+            case VK_RETURN:
+                if(menuPoint == 5) return;  // Нажатие на "BACK"
+                break;
+            case VK_ESCAPE: return;    // Выход в предыдущее меню по нажатию Escape
+        }
+    }
+}
 
 void menuSettings(const char *filename, gameSettings &settings) {
     int fieldW = settings.fieldW,
@@ -73,8 +114,10 @@ void menuSettings(const char *filename, gameSettings &settings) {
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 
         HIGHLIGHT_IF_CHOSEN(4);
-        centralString(settings, 120, "APPLY");
+        centralString(settings, 75, "GENE SETTINGS");
         HIGHLIGHT_IF_CHOSEN(5);
+        centralString(settings, 120, "APPLY");
+        HIGHLIGHT_IF_CHOSEN(6);
         centralString(settings, 150, "MAIN MENU");
 
         key = getch();
@@ -92,10 +135,11 @@ void menuSettings(const char *filename, gameSettings &settings) {
                 if ((menuPoint == 3) && (population < MAX_POPULATION)) population += 10;
                 break;
             case VK_RETURN:
-                if (menuPoint == 4) {    // Нажатие на "APPLY"
-                    applyChanges(fieldW, fieldH, population, filename, settings);
+                switch(menuPoint) {
+                    case 4: menuGene(filename, settings); break;    // Нажатие на "GENE SETTINGS"
+                    case 5: applyChanges(fieldW, fieldH, population, filename, settings); break; // "APPLY"
+                    case 6: return; // "MAIN MENU"
                 }
-                if (menuPoint == 5) return ;    // Нажатие на "MAIN MENU"
                 break;
             case VK_ESCAPE: return ;    // Выход в главное меню по нажатию Escape
         }
