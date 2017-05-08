@@ -2,15 +2,14 @@
 #define MENU_H
 
 #define MAIN_MENU_POINTS 3
-#define SETT_MENU_POINTS 6
-#define GENE_MENU_POINTS 5
+#define SETT_MENU_POINTS 8
 
 #include "struct.h"
 
 bool menu(const char *filename, gameSettings &settings);	// false - выход, true - запуск игры
 void menuSettings(const char *filename, gameSettings &settings);
-void menuGene(const char *filename, gameSettings &settings);
 bool applyChanges(const int fieldW, const int fieldH, const int population,
+                  const bool socialGene, const bool survivalGene, const bool lazyGene,
                   const char *filename, gameSettings &settings);
 void centralString(const gameSettings settings, const int height, const char *text);
 void settingMenuString(const gameSettings settings, const int number,

@@ -6,6 +6,9 @@ struct gameSettings {
 	int windowW, windowH;
 	int period;		// Интервал между ходами (в миллисекундах)
 	int population;    // Численность популяции (в процентах)
+	bool socialGene;
+	bool survivalGene;
+	bool lazyGene;
 };
 
 typedef signed char sbyte;

@@ -25,7 +25,10 @@ const gameSettings defaultSettings = {
     MIN_FIELD_W * CELL_SIZE_PX + (MIN_FIELD_W + 1) * GRID_THICKNESS_PX,  //screenW
     MIN_FIELD_H * CELL_SIZE_PX + (MIN_FIELD_H + 1) * GRID_THICKNESS_PX + STATUS_BAR_HEIGHT,  //screenH
     1000,        // period
-    20        // population
+    20,      // population
+    false,    // socialGene
+	false,    // survivalGene
+	false     // lazyGene
 };
 
 #endif // CONST_H
