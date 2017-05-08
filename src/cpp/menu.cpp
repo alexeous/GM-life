@@ -39,7 +39,7 @@ bool applyChanges(const int fieldW, const int fieldH, const int population,
         if ((tempSettings.fieldW != settings.fieldW) ||
             (tempSettings.fieldH != settings.fieldH)) {
                 closegraph();
-                initwindow(settings.windowW, settings.windowH, "GM-life");
+                initwindow(tempSettings.windowW, tempSettings.windowH, "GM-life");
         }
         settings = tempSettings;
         saveSettingsFile(filename, settings);
