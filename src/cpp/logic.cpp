@@ -8,7 +8,7 @@ void startGame(const gameSettings settings, gameField &field) {
 	for(int i = 0; i < h+2; i++) {
 		field[i][0].isAlive = field[i][w+1].isAlive = false;	// заполняем клетки по бокам поля
 		for(int j = 1; j <= w; j++)
-            if(rand() % 100 < settings.population) 
+            if(rand() % 100 < settings.population)
                 bornCell(field, i, j);
             else field[i][j].isAlive = false;
 	}
@@ -41,7 +41,7 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
 
 void bornCell(gameField &field, const int h, const int w) {
     field[h][w].isAlive = true;
-    field[h][w].health = 1;
+    field[h][w].health = field[h][w].maxHealth = 2;
 }
 
 void harmCell(gameField &field, const int h, const int w) {

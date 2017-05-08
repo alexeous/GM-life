@@ -13,6 +13,7 @@ typedef signed char sbyte;
 struct cell {
 	bool isAlive;
 	sbyte health;
+	sbyte maxHealth;
 };
 
 #include "const.h"

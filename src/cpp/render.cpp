@@ -2,6 +2,7 @@
 #include "event.h"
 #include "graphics.h"
 #include "render.h"
+#include "struct.h"
 #include <iostream>
 
 void outPeriod(const gameSettings settings) {
@@ -18,10 +19,20 @@ void outPeriod(const gameSettings settings) {
     outtextxy(wndW, wndH, buffer);
 }
 
-void renderField(const gameSettings settings, const gameField field) {
+int changeCellColor(const gameField field, const int i, const int j){
+    int x, y;
+    if(field[i][j].health == 0 ) return COLOR(230, 230, 230);
+    else {
+        x = (127 * field[i][j].health) / field[i][j].maxHealth;
+        y = 127 - x;
+        return COLOR(y, x, 0);
+    }
+}
+
+void renderField(const gameSettings settings, const gameField field){
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
-            setfillstyle(SOLID_FILL, (field[i][j].isAlive) ? GREEN : COLOR(230, 230, 230));
+            setfillstyle(SOLID_FILL, (field[i][j].isAlive) ? changeCellColor(field, i, j): changeCellColor(field, i, j));
             int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
             int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
             bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);

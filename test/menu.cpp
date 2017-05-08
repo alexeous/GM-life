@@ -4,11 +4,7 @@
 
 CTEST(menu_suite, applying_changes) {
     const char filename[] = "test/settings_files/test_settings";
-    gameSettings settings {
-	    defaultSettings.fieldW, defaultSettings.fieldH,
-        defaultSettings.windowW, defaultSettings.windowH,
-        defaultSettings.period, defaultSettings.population
-    };
+    gameSettings settings = defaultSettings;
     int fieldW, fieldH, population;
 
     fieldW = MIN_FIELD_W, fieldH = MIN_FIELD_H, population = MIN_POPULATION;
