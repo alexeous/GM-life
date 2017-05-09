@@ -11,7 +11,7 @@ void startGame(const gameSettings settings, gameField &field) {
 		field[i][0].isAlive = field[i][w+1].isAlive = false;	// заполняем клетки по бокам поля
 		for(int j = 1; j <= w; j++)
             if(rand() % 100 < settings.population)
-                bornCell(field, i, j);
+                firstBorn(field, i, j);
             else field[i][j].isAlive = false;
 	}
 	for(int j = 0; j < w+2; j++) {
@@ -41,9 +41,53 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
     }
 }
 
-void bornCell(gameField &field, const int h, const int w) {
+void firstBorn(gameField &field, const int h, const int w) {
+    for (int i = 0; i < 9; i++) {
+        field[h][w].socialGene[i] = rand() % 2;
+    }
+
     field[h][w].isAlive = true;
     field[h][w].health = 1;
+}
+
+struct aliveCell {
+    int h;
+    int w;
+};
+
+void identifyParent(const gameField field, aliveCell(&aliveCell)[8],
+                    const int h, const int w, int neighbors) {
+    if (field[h][w].isAlive) {
+        aliveCell[neighbors].h = h;
+        aliveCell[neighbors].w = w;
+        neighbors++;
+    }
+}
+
+void bornCell(const gameField oldField, gameField &newField, const int h, const int w) {
+
+    aliveCell aliveCell[8];
+
+    int neighbors = 0;
+    identifyParent(oldField, aliveCell, h - 1, w - 1, neighbors);
+    identifyParent(oldField, aliveCell, h - 1, w    , neighbors);
+    identifyParent(oldField, aliveCell, h - 1, w + 1, neighbors);
+    identifyParent(oldField, aliveCell, h    , w - 1, neighbors);
+    identifyParent(oldField, aliveCell, h    , w + 1, neighbors);
+    identifyParent(oldField, aliveCell, h + 1, w - 1, neighbors);
+    identifyParent(oldField, aliveCell, h + 1, w    , neighbors);
+    identifyParent(oldField, aliveCell, h + 1, w + 1, neighbors);
+
+    if (neighbors) {
+        int parent = rand() % neighbors;
+        for (int i = 0; i < 8; i++) {
+            newField[h][w].socialGene[i] =
+                    oldField[aliveCell[parent].h][aliveCell[parent].w].socialGene[i];
+        }
+    }
+
+    newField[h][w].isAlive = true;
+    newField[h][w].health = 1;
 }
 
 void harmCell(gameField &field, const int h, const int w) {
@@ -56,30 +100,29 @@ struct comfortCell {
     int w;
 };
 
-bool checkPlace(const gameField oldField, const gameField newField,
+void checkPlace(const gameField oldField, const gameField newField,
                 const bool socialGene[], comfortCell(&comfortCell)[9],
                 const int h, const int w, int &places) {
 
     if (oldField[h][w].isAlive == false && newField[h][w].isAlive == false) {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 9; i++) {
             if (socialGene[i] && neighborsAlive(oldField, h, w) == i) {
                 comfortCell[places].h = h;
                 comfortCell[places].w = w;
                 places++;
-                return true;    // Место подходит
+                return;    // Место подходит
             }
         }
     }
-    return false;   // Место не подходит
+    return;   // Место не подходит
 }
 
 void moveCell(const gameSettings settings, const gameField oldField,
               gameField &newField, const int h, const int w) {
 
     comfortCell comfortCell[9];
-    //const bool *social = oldField[h][w].socialGene;
     bool social[8];
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
         social[i] = oldField[h][w].socialGene[i];
 
     int places = 0;
@@ -102,7 +145,6 @@ void moveCell(const gameSettings settings, const gameField oldField,
         checkPlace(oldField, newField, social, comfortCell, h + 1, w + 1, places);
 
     if (places) {
-        srand(time(0));
         int pick = rand() % places;
         newField[comfortCell[pick].h][comfortCell[pick].w] = oldField[h][w];
     }
@@ -110,11 +152,11 @@ void moveCell(const gameSettings settings, const gameField oldField,
 
 void logic(const gameSettings settings, gameField &oldField) {
     gameField newField;
-    // Перед тем, как будет рассчитано новое поколение,
-    // клетки мигрируют в комфортные условия
     copyField(settings, newField, oldField);
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
+            // Перед тем, как будет рассчитано новое поколение,
+            // клетки мигрируют в комфортные условия
             if (settings.socialGene && oldField[i][j].isAlive)
                 moveCell(settings, oldField, newField, i, j);
         }
@@ -124,7 +166,7 @@ void logic(const gameSettings settings, gameField &oldField) {
         for(int j = 1; j <= settings.fieldW; j++) {
             int neighbors = neighborsAlive(oldField, i, j);
             if (oldField[i][j].isAlive == false) { // Рождается, если 3 живых соседа, иначе остаётся мертвой:
-                if(neighbors == 3) bornCell(newField, i, j);
+                if(neighbors == 3) bornCell(oldField, newField, i, j);
             } else {    // Теряет здоровье, когда меньше 2 или больше 3 соседей:
                 if(neighbors < 2 || neighbors > 3) harmCell(newField, i, j);
             }
