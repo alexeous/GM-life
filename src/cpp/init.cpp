@@ -12,6 +12,6 @@ bool init(gameSettings &settings, const char *settingsFilename) {
 		fflush(stdout);
 	}
 	initTime();
-	initwindow(settings.windowW, settings.windowH);
+	initwindow(settings.windowW, settings.windowH, "GM-life");
     return true;
 }

@@ -1,6 +1,8 @@
 #include "const.h"
 #include "logic.h"
 #include "graphics.h"
+#include <ctime>
+#include <stdlib.h>
 
 void startGame(const gameSettings settings, gameField &field) {
 	int w = settings.fieldW;
@@ -8,7 +10,7 @@ void startGame(const gameSettings settings, gameField &field) {
 	for(int i = 0; i < h+2; i++) {
 		field[i][0].isAlive = field[i][w+1].isAlive = false;	// заполняем клетки по бокам поля
 		for(int j = 1; j <= w; j++)
-            if(rand() % 100 < settings.population) 
+            if(rand() % 100 < settings.population)
                 bornCell(field, i, j);
             else field[i][j].isAlive = false;
 	}
@@ -49,9 +51,75 @@ void harmCell(gameField &field, const int h, const int w) {
         field[h][w].isAlive = false;
 }
 
+struct comfortCell {
+    int h;
+    int w;
+};
+
+bool checkPlace(const gameField oldField, const gameField newField,
+                const bool socialGene[], comfortCell(&comfortCell)[9],
+                const int h, const int w, int &places) {
+
+    if (oldField[h][w].isAlive == false && newField[h][w].isAlive == false) {
+        for (int i = 0; i < 8; i++) {
+            if (socialGene[i] && neighborsAlive(oldField, h, w) == i) {
+                comfortCell[places].h = h;
+                comfortCell[places].w = w;
+                places++;
+                return true;    // Место подходит
+            }
+        }
+    }
+    return false;   // Место не подходит
+}
+
+void moveCell(const gameSettings settings, const gameField oldField,
+              gameField &newField, const int h, const int w) {
+
+    comfortCell comfortCell[9];
+    //const bool *social = oldField[h][w].socialGene;
+    bool social[8];
+    for (int i = 0; i < 8; i++)
+        social[i] = oldField[h][w].socialGene[i];
+
+    int places = 0;
+    checkPlace(oldField, newField, social, comfortCell, h, w, places);
+    if (h > 1 && w > 1)
+        checkPlace(oldField, newField, social, comfortCell, h - 1, w - 1, places);
+    if (h > 1)
+        checkPlace(oldField, newField, social, comfortCell, h - 1, w    , places);
+    if (h > 1 && w < settings.fieldW)
+        checkPlace(oldField, newField, social, comfortCell, h - 1, w + 1, places);
+    if (w > 1)
+        checkPlace(oldField, newField, social, comfortCell, h    , w - 1, places);
+    if (h > 1 && w < settings.fieldW)
+        checkPlace(oldField, newField, social, comfortCell, h    , w + 1, places);
+    if (h < settings.fieldH && w > 1)
+        checkPlace(oldField, newField, social, comfortCell, h + 1, w - 1, places);
+    if (h < settings.fieldH)
+        checkPlace(oldField, newField, social, comfortCell, h + 1, w    , places);
+    if (h < settings.fieldH && w < settings.fieldW)
+        checkPlace(oldField, newField, social, comfortCell, h + 1, w + 1, places);
+
+    if (places) {
+        srand(time(0));
+        int pick = rand() % places;
+        newField[comfortCell[pick].h][comfortCell[pick].w] = oldField[h][w];
+    }
+}
+
 void logic(const gameSettings settings, gameField &oldField) {
     gameField newField;
+    // Перед тем, как будет рассчитано новое поколение,
+    // клетки мигрируют в комфортные условия
     copyField(settings, newField, oldField);
+    for(int i = 1; i <= settings.fieldH; i++) {
+        for(int j = 1; j <= settings.fieldW; j++) {
+            if (settings.socialGene && oldField[i][j].isAlive)
+                moveCell(settings, oldField, newField, i, j);
+        }
+	}
+	copyField(settings, oldField, newField);
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
             int neighbors = neighborsAlive(oldField, i, j);

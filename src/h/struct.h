@@ -16,6 +16,7 @@ typedef signed char sbyte;
 struct cell {
 	bool isAlive;
 	sbyte health;
+	bool socialGene[8];
 };
 
 #include "const.h"
