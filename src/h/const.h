@@ -27,7 +27,6 @@ inline int calcWindowH(int fieldH) {
     return fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX + STATUS_BAR_HEIGHT;
 }
 
-
 const gameSettings defaultSettings = {
     MIN_FIELD_W, MIN_FIELD_H,       // fieldW, fieldH
     calcWindowW(MIN_FIELD_W),  //screenW

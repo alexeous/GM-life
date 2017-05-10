@@ -8,8 +8,10 @@
 void firstBorn(gameField &field, const int h, const int w);
 void bornCell(const gameField oldField, gameField &newField, const int h, const int w);
 void harmCell(gameField &field, const int h, const int w);
-void moveCell(const gameSettings settings, const gameField oldField,
-              gameField &newField, const int h, const int w);
+
+bool wouldMigrateTo(const gameSettings settings, const gameField field, int h, int w, int toH, int toW);
+void migrateCell(const gameSettings settings, gameField &field, const int h, const int w);
+
 void startGame(const gameSettings settings, gameField &field);
 void logic(const gameSettings settings, gameField &oldField);
 int neighborsAlive(const gameField field, const int h, const int w); // кол-во живый соседей клетки

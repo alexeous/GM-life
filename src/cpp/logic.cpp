@@ -2,6 +2,7 @@
 #include "logic.h"
 #include "graphics.h"
 #include <ctime>
+#include <vector>
 #include <stdlib.h>
 
 void startGame(const gameSettings settings, gameField &field) {
@@ -95,73 +96,52 @@ void harmCell(gameField &field, const int h, const int w) {
         field[h][w].isAlive = false;
 }
 
-struct comfortCell {
-    int h;
-    int w;
-};
-
-void checkPlace(const gameField oldField, const gameField newField,
-                const bool socialGene[], comfortCell(&comfortCell)[9],
-                const int h, const int w, int &places) {
-
-    if (oldField[h][w].isAlive == false && newField[h][w].isAlive == false) {
-        for (int i = 0; i < 9; i++) {
-            if (socialGene[i] && neighborsAlive(oldField, h, w) == i) {
-                comfortCell[places].h = h;
-                comfortCell[places].w = w;
-                places++;
-                return;    // Место подходит
-            }
-        }
-    }
-    return;   // Место не подходит
+bool wouldMigrateTo(const gameSettings settings, const gameField field, int h, int w, int toH, int toW) {
+    if(toH < 1 || toH > settings.fieldH ||
+       toW < 1 || toW > settings.fieldW ||
+       field[toH][toW].isAlive)
+        return false;
+    int neighbors = neighborsAlive(field, toH, toW) - 1;     // минус сама клетка, входящая в число соседей
+    return field[h][w].socialGene[neighbors];
 }
 
-void moveCell(const gameSettings settings, const gameField oldField,
-              gameField &newField, const int h, const int w) {
+#define CONSIDER_MIGRATE_TO(toH, toW) \
+    if(wouldMigrateTo(settings, field, h, w, (toH), (toW))) \
+        comfortCells.push_back(&field[(toH)][(toW)]);     // newField, т.к. менять будем его
 
-    comfortCell comfortCell[9];
-    bool social[8];
-    for (int i = 0; i < 9; i++)
-        social[i] = oldField[h][w].socialGene[i];
+void migrateCell(const gameSettings settings, gameField &field, const int h, const int w) 
+{
+    std::vector<cell*> comfortCells;
+    
+    CONSIDER_MIGRATE_TO(h - 1, w - 1);
+    CONSIDER_MIGRATE_TO(h - 1,   w  );
+    CONSIDER_MIGRATE_TO(h - 1, w + 1);
+    CONSIDER_MIGRATE_TO(  h  , w - 1);
+    CONSIDER_MIGRATE_TO(  h  , w + 1);
+    CONSIDER_MIGRATE_TO(h + 1, w - 1);
+    CONSIDER_MIGRATE_TO(h + 1,   w  );
+    CONSIDER_MIGRATE_TO(h + 1, w + 1);
 
-    int places = 0;
-    checkPlace(oldField, newField, social, comfortCell, h, w, places);
-    if (h > 1 && w > 1)
-        checkPlace(oldField, newField, social, comfortCell, h - 1, w - 1, places);
-    if (h > 1)
-        checkPlace(oldField, newField, social, comfortCell, h - 1, w    , places);
-    if (h > 1 && w < settings.fieldW)
-        checkPlace(oldField, newField, social, comfortCell, h - 1, w + 1, places);
-    if (w > 1)
-        checkPlace(oldField, newField, social, comfortCell, h    , w - 1, places);
-    if (h > 1 && w < settings.fieldW)
-        checkPlace(oldField, newField, social, comfortCell, h    , w + 1, places);
-    if (h < settings.fieldH && w > 1)
-        checkPlace(oldField, newField, social, comfortCell, h + 1, w - 1, places);
-    if (h < settings.fieldH)
-        checkPlace(oldField, newField, social, comfortCell, h + 1, w    , places);
-    if (h < settings.fieldH && w < settings.fieldW)
-        checkPlace(oldField, newField, social, comfortCell, h + 1, w + 1, places);
-
-    if (places) {
-        int pick = rand() % places;
-        newField[comfortCell[pick].h][comfortCell[pick].w] = oldField[h][w];
+    if(!comfortCells.empty()) {
+        cell *destination = comfortCells[rand() % comfortCells.size()];
+        *destination = field[h][w];
+        field[h][w].isAlive = false;
     }
 }
 
 void logic(const gameSettings settings, gameField &oldField) {
     gameField newField;
-    copyField(settings, newField, oldField);
-    for(int i = 1; i <= settings.fieldH; i++) {
-        for(int j = 1; j <= settings.fieldW; j++) {
-            // Перед тем, как будет рассчитано новое поколение,
-            // клетки мигрируют в комфортные условия
-            if (settings.socialGene && oldField[i][j].isAlive)
-                moveCell(settings, oldField, newField, i, j);
-        }
-	}
-	copyField(settings, oldField, newField);
+	copyField(settings, newField, oldField);
+    if(settings.socialGene) {
+        for(int i = 1; i <= settings.fieldH; i++)
+            for(int j = 1; j <= settings.fieldW; j++) {
+                // Перед тем, как будет рассчитано новое поколение,
+                // клетки мигрируют в комфортные условия
+                if (newField[i][j].isAlive)
+                    migrateCell(settings, newField, i, j);
+            }
+    }
+    copyField(settings, oldField, newField);
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
             int neighbors = neighborsAlive(oldField, i, j);
