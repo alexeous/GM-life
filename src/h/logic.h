@@ -6,15 +6,16 @@
 #include "struct.h"
 
 void firstBorn(gameField &field, const int h, const int w);
-void bornCell(const gameField oldField, gameField &newField, const int h, const int w);
+void bornCell(gameField oldField, gameField &newField, const int h, const int w);
 void harmCell(gameField &field, const int h, const int w);
 
-bool wouldMigrateTo(const gameSettings settings, const gameField field, int h, int w, int toH, int toW);
+bool wouldMigrateTo(const gameSettings settings, gameField field, int h, int w, int toH, int toW);
 void migrateCell(const gameSettings settings, gameField &field, const int h, const int w);
 
 void startGame(const gameSettings settings, gameField &field);
 void logic(const gameSettings settings, gameField &oldField);
-int neighborsAlive(const gameField field, const int h, const int w); // кол-во живый соседей клетки
+// Количество живых соседей клетки. Если neighbors_out не NULL, запсывает по этому адресу массив живых соседей
+int neighborsAlive(gameField field, const int h, const int w, cell *neighbors_out = NULL); 
 void copyField(const gameSettings settings, gameField &dest, const gameField src);  // копирует поле из src в dest
 
 #endif // LOGIC_H

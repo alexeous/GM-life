@@ -21,16 +21,23 @@ void startGame(const gameSettings settings, gameField &field) {
 	cleardevice();
 }
 
-int neighborsAlive(const gameField field, const int h, const int w) {    // Считает живых соседей
+
+#define ADD_ALIVE_NEIGHBOR(nh, nw) \
+    if(field[(nh)][(nw)].isAlive) { \
+        if(neighbors_out != NULL) neighbors_out[neighbors] = field[(nh)][(nw)]; \
+        neighbors++; \
+    }
+
+int neighborsAlive(gameField field, const int h, const int w, cell *neighbors_out) {
     int neighbors = 0;
-    if (field[h - 1][w - 1].isAlive) neighbors++;    //
-    if (field[h - 1][  w  ].isAlive) neighbors++;    //
-    if (field[h - 1][w + 1].isAlive) neighbors++;    //
-    if (field[  h  ][w - 1].isAlive) neighbors++;    // Проверяем все
-    if (field[  h  ][w + 1].isAlive) neighbors++;    // соседние клетки
-    if (field[h + 1][w - 1].isAlive) neighbors++;    //
-    if (field[h + 1][  w  ].isAlive) neighbors++;    //
-    if (field[h + 1][w + 1].isAlive) neighbors++;    //
+    ADD_ALIVE_NEIGHBOR(h - 1, w - 1);   //
+    ADD_ALIVE_NEIGHBOR(h - 1,   w  );   //
+    ADD_ALIVE_NEIGHBOR(h - 1, w + 1);   //
+    ADD_ALIVE_NEIGHBOR(  h  , w - 1);   // Проверяем все
+    ADD_ALIVE_NEIGHBOR(  h  , w + 1);   // соседние клетки
+    ADD_ALIVE_NEIGHBOR(h + 1, w - 1);   //
+    ADD_ALIVE_NEIGHBOR(h + 1,   w  );   //
+    ADD_ALIVE_NEIGHBOR(h + 1, w + 1);   //
     return neighbors;
 }
 
@@ -46,49 +53,19 @@ void firstBorn(gameField &field, const int h, const int w) {
     for (int i = 0; i < 9; i++) {
         field[h][w].socialGene[i] = rand() % 2;
     }
-
     field[h][w].isAlive = true;
     field[h][w].health = 1;
 }
 
-struct aliveCell {
-    int h;
-    int w;
-};
-
-void identifyParent(const gameField field, aliveCell(&aliveCell)[8],
-                    const int h, const int w, int neighbors) {
-    if (field[h][w].isAlive) {
-        aliveCell[neighbors].h = h;
-        aliveCell[neighbors].w = w;
-        neighbors++;
-    }
-}
-
-void bornCell(const gameField oldField, gameField &newField, const int h, const int w) {
-
-    aliveCell aliveCell[8];
-
-    int neighbors = 0;
-    identifyParent(oldField, aliveCell, h - 1, w - 1, neighbors);
-    identifyParent(oldField, aliveCell, h - 1, w    , neighbors);
-    identifyParent(oldField, aliveCell, h - 1, w + 1, neighbors);
-    identifyParent(oldField, aliveCell, h    , w - 1, neighbors);
-    identifyParent(oldField, aliveCell, h    , w + 1, neighbors);
-    identifyParent(oldField, aliveCell, h + 1, w - 1, neighbors);
-    identifyParent(oldField, aliveCell, h + 1, w    , neighbors);
-    identifyParent(oldField, aliveCell, h + 1, w + 1, neighbors);
-
-    if (neighbors) {
-        int parent = rand() % neighbors;
-        for (int i = 0; i < 8; i++) {
-            newField[h][w].socialGene[i] =
-                    oldField[aliveCell[parent].h][aliveCell[parent].w].socialGene[i];
-        }
-    }
-
+void bornCell(gameField oldField, gameField &newField, const int h, const int w) {
     newField[h][w].isAlive = true;
     newField[h][w].health = 1;
+    
+    cell parents[8];
+    int parentCount = neighborsAlive(oldField, h, w, parents);
+    
+    int parentIndex = rand() % parentCount;
+    memcpy(newField[h][w].socialGene, parents[parentIndex].socialGene, sizeof(bool)*8);
 }
 
 void harmCell(gameField &field, const int h, const int w) {
@@ -96,7 +73,7 @@ void harmCell(gameField &field, const int h, const int w) {
         field[h][w].isAlive = false;
 }
 
-bool wouldMigrateTo(const gameSettings settings, const gameField field, int h, int w, int toH, int toW) {
+bool wouldMigrateTo(const gameSettings settings, gameField field, int h, int w, int toH, int toW) {
     if(toH < 1 || toH > settings.fieldH ||
        toW < 1 || toW > settings.fieldW ||
        field[toH][toW].isAlive)
@@ -107,7 +84,7 @@ bool wouldMigrateTo(const gameSettings settings, const gameField field, int h, i
 
 #define CONSIDER_MIGRATE_TO(toH, toW) \
     if(wouldMigrateTo(settings, field, h, w, (toH), (toW))) \
-        comfortCells.push_back(&field[(toH)][(toW)]);     // newField, т.к. менять будем его
+        comfortCells.push_back(&field[(toH)][(toW)]);
 
 void migrateCell(const gameSettings settings, gameField &field, const int h, const int w) 
 {
@@ -131,17 +108,16 @@ void migrateCell(const gameSettings settings, gameField &field, const int h, con
 
 void logic(const gameSettings settings, gameField &oldField) {
     gameField newField;
-	copyField(settings, newField, oldField);
     if(settings.socialGene) {
         for(int i = 1; i <= settings.fieldH; i++)
             for(int j = 1; j <= settings.fieldW; j++) {
                 // Перед тем, как будет рассчитано новое поколение,
                 // клетки мигрируют в комфортные условия
-                if (newField[i][j].isAlive)
-                    migrateCell(settings, newField, i, j);
+                if (oldField[i][j].isAlive)
+                    migrateCell(settings, oldField, i, j);
             }
     }
-    copyField(settings, oldField, newField);
+	copyField(settings, newField, oldField);
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
             int neighbors = neighborsAlive(oldField, i, j);
