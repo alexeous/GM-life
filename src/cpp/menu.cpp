@@ -22,27 +22,17 @@ void settingMenuString(const gameSettings settings, const int number,
     outtextxy(centerW + slipR, firstPos + strHeight * (number - 1), (char*)textRight);
 }
 
-bool applyChanges(const int fieldW, const int fieldH, const int population,
-                  const bool socialGene, const bool survivalGene, const bool lazyGene,
-                  const char *filename, gameSettings &settings) {
-    gameSettings tempSettings = settings;
-    tempSettings.fieldW = fieldW;
-    tempSettings.fieldH = fieldH;
-    tempSettings.windowW = fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;
-    tempSettings.windowH = fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX
-                                                            + STATUS_BAR_HEIGHT;
-    tempSettings.population = population;
-    tempSettings.socialGene = socialGene;
-    tempSettings.survivalGene = survivalGene;
-    tempSettings.lazyGene = lazyGene;
-    if (validateSettings(tempSettings)) {
-        if ((tempSettings.fieldW != settings.fieldW) ||
-            (tempSettings.fieldH != settings.fieldH)) {
+bool applyChanges(const char *filename, gameSettings &dest, gameSettings src) {
+    if (validateSettings(src)) {
+        src.windowW = calcWindowW(src.fieldW);
+        src.windowH = calcWindowH(src.fieldH);
+        if ((src.fieldW != dest.fieldW) ||
+            (src.fieldH != dest.fieldH)) {
                 closegraph();
-                initwindow(tempSettings.windowW, tempSettings.windowH, "GM-life");
+                initwindow(src.windowW, src.windowH, "GM-life");
         }
-        settings = tempSettings;
-        saveSettingsFile(filename, settings);
+        dest = src;
+        saveSettingsFile(filename, dest);
         return true;
     } else return false;    // Если настройки приняли недопустимые значения
 }
@@ -53,14 +43,9 @@ bool applyChanges(const int fieldW, const int fieldH, const int population,
 #define FORMAT(format, ...) (sprintf(buffer, (format), ##__VA_ARGS__), buffer)
 
 void menuSettings(const char *filename, gameSettings &settings) {
-    int fieldW = settings.fieldW,
-        fieldH = settings.fieldH,
-        population = settings.population,
-        menuPoint = 1;
-    bool socialGene = settings.socialGene,
-         survivalGene = settings.survivalGene,
-         lazyGene = settings.lazyGene;
-    char key = 0, buffer[5];
+    int menuPoint = 1;
+    gameSettings tempSet = settings;
+    char key, buffer[10];
 
     while (true) {
         setbkcolor(WHITE);
@@ -74,76 +59,64 @@ void menuSettings(const char *filename, gameSettings &settings) {
         settextstyle(COMPLEX_FONT, 0, 2);
 
         HIGHLIGHT_IF_CHOSEN(1);
-        settingMenuString (settings, 1, "FIELD WIDTH", FORMAT("% 3d", fieldW));
+        settingMenuString (tempSet, 1, "FIELD WIDTH", FORMAT("% 3d", tempSet.fieldW));
         HIGHLIGHT_IF_CHOSEN(2);
-        settingMenuString (settings, 2, "FIELD HEIGHT", FORMAT("% 3d", fieldH));
+        settingMenuString (tempSet, 2, "FIELD HEIGHT", FORMAT("% 3d", tempSet.fieldH));
         HIGHLIGHT_IF_CHOSEN(3);
-        settingMenuString (settings, 3, "POPULATION", FORMAT("% 3d%%", population));
+        settingMenuString (tempSet, 3, "POPULATION", FORMAT("% 3d%%", tempSet.population));
         HIGHLIGHT_IF_CHOSEN(4);
-        settingMenuString (settings, 4, "SOCIALITY GENE",
-                           FORMAT("%3s", socialGene ? "ON" : "OFF"));
+        settingMenuString (tempSet, 4, "SOCIALITY GENE", tempSet.socialGene ? "ON" : "OFF");
         HIGHLIGHT_IF_CHOSEN(5);
-        settingMenuString (settings, 5, "SURVIVAL GENE",
-                           FORMAT("%3s", survivalGene ? "ON" : "OFF"));
+        settingMenuString (tempSet, 5, "SURVIVAL GENE", tempSet.survivalGene ? "ON" : "OFF");
         HIGHLIGHT_IF_CHOSEN(6);
-        settingMenuString (settings, 6, "LAZINESS GENE",
-                           FORMAT("%3s", lazyGene ? "ON" : "OFF"));
+        settingMenuString (tempSet, 6, "LAZINESS GENE", tempSet.lazyGene ? "ON" : "OFF");
 
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 
         HIGHLIGHT_IF_CHOSEN(7);
-        centralString(settings, 120, "APPLY");
+        centralString(tempSet, 120, "APPLY");
         HIGHLIGHT_IF_CHOSEN(8);
-        centralString(settings, 150, "CANCEL");
+        centralString(tempSet, 150, "CANCEL");
 
         key = getch();
         switch(key) {
         case KEY_DOWN:  if (++menuPoint > SETT_MENU_POINTS) menuPoint = 1; break;
         case KEY_UP:    if (--menuPoint < 1) menuPoint = SETT_MENU_POINTS; break;
         case KEY_LEFT:
-            if ((menuPoint == 1) && (fieldW > MIN_FIELD_W)) fieldW--;
-            if ((menuPoint == 2) && (fieldH > MIN_FIELD_H)) fieldH--;
-            if ((menuPoint == 3) && (population > MIN_POPULATION)) population -= 10;
-            if (menuPoint == 4) {
-                if (socialGene) socialGene = false; else socialGene = true;
-            }
-            if (menuPoint == 5) {
-                if (survivalGene) survivalGene = false; else survivalGene = true;
-            }
-            if (menuPoint == 6)  {
-                if (lazyGene) lazyGene = false; else lazyGene = true;
+            switch(menuPoint) {
+                case 1:     if(tempSet.fieldW > MIN_FIELD_W) tempSet.fieldW--;  break;
+                case 2:     if(tempSet.fieldH > MIN_FIELD_H) tempSet.fieldH--;  break;
+                case 3:     if(tempSet.population > MIN_POPULATION) tempSet.population -= 10; break;
+                case 4:     tempSet.socialGene = !tempSet.socialGene; break;
+                case 5:     tempSet.survivalGene = !tempSet.survivalGene; break;
+                case 6:     tempSet.lazyGene = !tempSet.lazyGene; break;
             }
             break;
         case KEY_RIGHT:
-            if ((menuPoint == 1) && (fieldW < MAX_FIELD_W)) fieldW++;
-            if ((menuPoint == 2) && (fieldH < MAX_FIELD_H)) fieldH++;
-            if ((menuPoint == 3) && (population < MAX_POPULATION)) population += 10;
-            if (menuPoint == 4) {
-                if (socialGene) socialGene = false; else socialGene = true;
-            }
-            if (menuPoint == 5) {
-                if (survivalGene) survivalGene = false; else survivalGene = true;
-            }
-            if (menuPoint == 6)  {
-                if (lazyGene) lazyGene = false; else lazyGene = true;
+            switch(menuPoint) {
+                case 1:     if(tempSet.fieldW < MAX_FIELD_W) tempSet.fieldW++;  break;
+                case 2:     if(tempSet.fieldH < MAX_FIELD_H) tempSet.fieldH++;  break;
+                case 3:     if(tempSet.population < MAX_POPULATION) tempSet.population += 10; break;
+                case 4:     tempSet.socialGene = !tempSet.socialGene; break;
+                case 5:     tempSet.survivalGene = !tempSet.survivalGene; break;
+                case 6:     tempSet.lazyGene = !tempSet.lazyGene; break;
             }
             break;
         case VK_RETURN:
             switch(menuPoint) {
-            case 7: applyChanges(fieldW, fieldH, population, socialGene, survivalGene,
-                                 lazyGene, filename, settings); // "APPLY"
-                    return;
-            case 8: return; // "CANCEL"
+                case 7: applyChanges(filename, settings, tempSet); // "APPLY"
+                        return;
+                case 8: return; // "CANCEL"
             }
             break;
-        case VK_ESCAPE: return ;    // Выход в главное меню по нажатию Escape
+        case VK_ESCAPE: return;    // Выход в главное меню по нажатию Escape
         }
     }
 }
 
 bool menu(const char *filename, gameSettings &settings) {
     int menuPoint = 1;
-    char key = 0;
+    char key;
 
     while (true) {
         setbkcolor(WHITE);

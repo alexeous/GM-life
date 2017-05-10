@@ -8,9 +8,7 @@
 
 bool menu(const char *filename, gameSettings &settings);	// false - выход, true - запуск игры
 void menuSettings(const char *filename, gameSettings &settings);
-bool applyChanges(const int fieldW, const int fieldH, const int population,
-                  const bool socialGene, const bool survivalGene, const bool lazyGene,
-                  const char *filename, gameSettings &settings);
+bool applyChanges(const char *filename, gameSettings &dest, gameSettings src);
 void centralString(const gameSettings settings, const int height, const char *text);
 void settingMenuString(const gameSettings settings, const int number,
                        const char *textLeft, const char *textRight);

@@ -20,10 +20,18 @@
 
 #include "struct.h"
 
+inline int calcWindowW(int fieldW) {
+    return fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;
+}
+inline int calcWindowH(int fieldH) {
+    return fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX + STATUS_BAR_HEIGHT;
+}
+
+
 const gameSettings defaultSettings = {
     MIN_FIELD_W, MIN_FIELD_H,       // fieldW, fieldH
-    MIN_FIELD_W * CELL_SIZE_PX + (MIN_FIELD_W + 1) * GRID_THICKNESS_PX,  //screenW
-    MIN_FIELD_H * CELL_SIZE_PX + (MIN_FIELD_H + 1) * GRID_THICKNESS_PX + STATUS_BAR_HEIGHT,  //screenH
+    calcWindowW(MIN_FIELD_W),  //screenW
+    calcWindowH(MIN_FIELD_H),  //screenH
     1000,        // period
     20,      // population
     false,    // socialGene
