@@ -17,6 +17,7 @@ struct cell {
 	bool isAlive;
 	sbyte health;
 	bool socialGene[9];
+	sbyte maxHealth;
 };
 
 #include "const.h"

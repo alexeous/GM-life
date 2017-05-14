@@ -54,18 +54,21 @@ void firstBorn(gameField &field, const int h, const int w) {
         field[h][w].socialGene[i] = rand() % 2;
     }
     field[h][w].isAlive = true;
-    field[h][w].health = 1;
+    field[h][w].health = field[h][w].maxHealth = 1;
 }
 
 void bornCell(gameField oldField, gameField &newField, const int h, const int w) {
-    newField[h][w].isAlive = true;
-    newField[h][w].health = 1;
-    
+    cell &newcell = newField[h][w];
+    newcell.isAlive = true;
+
     cell parents[8];
     int parentCount = neighborsAlive(oldField, h, w, parents);
-    
+
     int parentIndex = rand() % parentCount;
-    memcpy(newField[h][w].socialGene, parents[parentIndex].socialGene, sizeof(bool)*8);
+    memcpy(newcell.socialGene, parents[parentIndex].socialGene, sizeof(bool)*8);
+    parentIndex = rand() % parentCount;
+    newcell.maxHealth = parents[parentIndex].maxHealth;
+    newcell.health = newcell.maxHealth;
 }
 
 void harmCell(gameField &field, const int h, const int w) {
@@ -86,10 +89,10 @@ bool wouldMigrateTo(const gameSettings settings, gameField field, int h, int w, 
     if(wouldMigrateTo(settings, field, h, w, (toH), (toW))) \
         comfortCells.push_back(&field[(toH)][(toW)]);
 
-void migrateCell(const gameSettings settings, gameField &field, const int h, const int w) 
+void migrateCell(const gameSettings settings, gameField &field, const int h, const int w)
 {
     std::vector<cell*> comfortCells;
-    
+
     CONSIDER_MIGRATE_TO(h - 1, w - 1);
     CONSIDER_MIGRATE_TO(h - 1,   w  );
     CONSIDER_MIGRATE_TO(h - 1, w + 1);
