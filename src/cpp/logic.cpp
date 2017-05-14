@@ -22,22 +22,18 @@ void startGame(const gameSettings settings, gameField &field) {
 }
 
 
-#define ADD_ALIVE_NEIGHBOR(nh, nw) \
-    if(field[(nh)][(nw)].isAlive) { \
-        if(neighbors_out != NULL) neighbors_out[neighbors] = field[(nh)][(nw)]; \
-        neighbors++; \
-    }
-
 int neighborsAlive(gameField field, const int h, const int w, cell *neighbors_out) {
     int neighbors = 0;
-    ADD_ALIVE_NEIGHBOR(h - 1, w - 1);   //
-    ADD_ALIVE_NEIGHBOR(h - 1,   w  );   //
-    ADD_ALIVE_NEIGHBOR(h - 1, w + 1);   //
-    ADD_ALIVE_NEIGHBOR(  h  , w - 1);   // Проверяем все
-    ADD_ALIVE_NEIGHBOR(  h  , w + 1);   // соседние клетки
-    ADD_ALIVE_NEIGHBOR(h + 1, w - 1);   //
-    ADD_ALIVE_NEIGHBOR(h + 1,   w  );   //
-    ADD_ALIVE_NEIGHBOR(h + 1, w + 1);   //
+
+    for(int i = 0; i < 8; i++) {
+        int toH = h + neighborsOffsets[i].h;
+        int toW = w + neighborsOffsets[i].w;
+        if(field[toH][toW].isAlive) {
+            if(neighbors_out != NULL)
+                neighbors_out[neighbors] = field[toH][toW];
+            neighbors++;
+        }
+    }
     return neighbors;
 }
 
@@ -85,23 +81,15 @@ bool wouldMigrateTo(const gameSettings settings, gameField field, int h, int w, 
     return field[h][w].socialGene[neighbors];
 }
 
-#define CONSIDER_MIGRATE_TO(toH, toW) \
-    if(wouldMigrateTo(settings, field, h, w, (toH), (toW))) \
-        comfortCells.push_back(&field[(toH)][(toW)]);
-
-void migrateCell(const gameSettings settings, gameField &field, const int h, const int w)
-{
+void migrateCell(const gameSettings settings, gameField &field, const int h, const int w) {
     std::vector<cell*> comfortCells;
 
-    CONSIDER_MIGRATE_TO(h - 1, w - 1);
-    CONSIDER_MIGRATE_TO(h - 1,   w  );
-    CONSIDER_MIGRATE_TO(h - 1, w + 1);
-    CONSIDER_MIGRATE_TO(  h  , w - 1);
-    CONSIDER_MIGRATE_TO(  h  , w + 1);
-    CONSIDER_MIGRATE_TO(h + 1, w - 1);
-    CONSIDER_MIGRATE_TO(h + 1,   w  );
-    CONSIDER_MIGRATE_TO(h + 1, w + 1);
-
+    for(int i = 0; i < 8; i++) {
+        int toH = h + neighborsOffsets[i].h;
+        int toW = w + neighborsOffsets[i].w;
+        if(wouldMigrateTo(settings, field, h, w, toH, toW))
+            comfortCells.push_back(&field[toH][toW]);
+    }
     if(!comfortCells.empty()) {
         cell *destination = comfortCells[rand() % comfortCells.size()];
         *destination = field[h][w];

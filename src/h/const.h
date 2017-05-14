@@ -20,6 +20,13 @@
 
 #include "struct.h"
 
+// Массив отступов для доступа к каждому соседу
+struct {
+    int h, w; 
+} const neighborsOffsets[8] = { {-1, -1}, {-1, 0}, {-1, 1},
+                                {0,  -1},          {0,  1},
+                                {1,  -1}, {1,  0}, {1,  1} };
+
 inline int calcWindowW(int fieldW) {
     return fieldW * CELL_SIZE_PX + (fieldW + 1) * GRID_THICKNESS_PX;
 }
