@@ -8,14 +8,12 @@
 void outPeriod(const gameSettings settings) {
     int wndW = settings.windowW, wndH = settings.windowH;
     setfillstyle(SOLID_FILL, WHITE);
-    bar(wndW - 105, wndH - STATUS_BAR_HEIGHT, wndW - 45, wndH);   // очистка старой надписи
+    bar(wndW - 105, wndH - STATUS_BAR_HEIGHT, wndW - 48, wndH);   // очистка старой надписи
     settextstyle(COMPLEX_FONT, 0, 1);
     settextjustify(RIGHT_TEXT, BOTTOM_TEXT);
     setcolor(DARKGRAY);
     char buffer[20];
-    sprintf(buffer, "%2.1f s + - ", settings.period / 1000.0f);
-    bar3d(wndW - 22, wndH - 17, wndW - 8, wndH - 3, 2, true);
-    bar3d(wndW - 42, wndH - 17, wndW - 28, wndH - 3, 2, true);
+    sprintf(buffer, "%2.1f s     ", settings.period / 1000.0f);
     outtextxy(wndW, wndH, buffer);
 }
 
@@ -47,10 +45,22 @@ void renderStatusBar(const gameSettings settings, bool firstDraw) {
         outPeriod(settings);
     }
     if(firstDraw) {
-        settextstyle(COMPLEX_FONT, 0, 1);
-        settextjustify(LEFT_TEXT, BOTTOM_TEXT);
+        int wndW = settings.windowW, wndH = settings.windowH;
         setcolor(DARKGRAY);
-        bar3d(1, settings.windowH - 19, 36, settings.windowH - 2, 2, true);
-        outtextxy(4, settings.windowH, "Esc menu");
+        settextstyle(COMPLEX_FONT, 0, 1);
+        settextjustify(RIGHT_TEXT, BOTTOM_TEXT);
+        bar3d(wndW - 22, wndH - 17, wndW - 8, wndH - 3, 2, true);
+        bar3d(wndW - 42, wndH - 17, wndW - 28, wndH - 3, 2, true);
+
+        line(wndW - 11, wndH - 10, wndW - 17, wndH - 10);
+        line(wndW - 19, wndH - 10, wndW - 15, wndH - 14);
+        line(wndW - 19, wndH - 10, wndW - 15, wndH - 6);
+        line(wndW - 40, wndH - 10, wndW - 31, wndH -10);
+        line(wndW - 31, wndH -10, wndW - 35, wndH - 14);
+        line(wndW - 31, wndH -10, wndW - 35, wndH - 6);
+
+        bar3d(1, wndH - 19, 36, wndH - 2, 2, true);
+        settextjustify(LEFT_TEXT, BOTTOM_TEXT);
+        outtextxy(4, wndH, "Esc menu");
     }
 }
