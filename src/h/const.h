@@ -1,8 +1,8 @@
 #ifndef CONST_H
 #define CONST_H
 
-#define MAX_FIELD_W 115
-#define MAX_FIELD_H 65
+#define MAX_FIELD_W 110
+#define MAX_FIELD_H 55
 #define MIN_FIELD_W 30
 #define MIN_FIELD_H 30
 

@@ -4,7 +4,7 @@
 #include "struct.h"
 
 void outPeriod(const gameSettings settings);
-int changeCellColor(const gameField field, const int i, const int j);
+int calculateCellColor(const gameField field, const int i, const int j);
 void renderField(const gameSettings settings, const gameField field);
 void renderStatusBar(const gameSettings settings, bool firstDraw = false);    // firstDraw - принудительно отрисовать
 

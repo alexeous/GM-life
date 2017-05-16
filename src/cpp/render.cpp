@@ -17,7 +17,7 @@ void outPeriod(const gameSettings settings) {
     outtextxy(wndW, wndH, buffer);
 }
 
-int changeCellColor(const gameField field, const int i, const int j){
+int calculateCellColor(const gameField field, const int i, const int j){
     int x, y;
     if(!field[i][j].isAlive) return COLOR(230, 230, 230);
     else {
@@ -30,7 +30,7 @@ int changeCellColor(const gameField field, const int i, const int j){
 void renderField(const gameSettings settings, const gameField field){
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
-            setfillstyle(SOLID_FILL, (field[i][j].isAlive) ? changeCellColor(field, i, j): changeCellColor(field, i, j));
+            setfillstyle(SOLID_FILL, calculateCellColor(field, i, j));
             int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
             int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
             bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
