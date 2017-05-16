@@ -5,7 +5,7 @@
 #include <string.h>
 #include "struct.h"
 
-void firstBorn(gameField &field, const int h, const int w);
+void firstBorn(const gameSettings settings, gameField &field, const int h, const int w);
 void bornCell(gameField oldField, gameField &newField, const int h, const int w);
 void harmCell(gameField &field, const int h, const int w);
 

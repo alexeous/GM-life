@@ -12,7 +12,7 @@ void startGame(const gameSettings settings, gameField &field) {
 		field[i][0].isAlive = field[i][w+1].isAlive = false;	// заполняем клетки по бокам поля
 		for(int j = 1; j <= w; j++)
             if(rand() % 100 < settings.population)
-                firstBorn(field, i, j);
+                firstBorn(settings, field, i, j);
             else field[i][j].isAlive = false;
 	}
 	for(int j = 0; j < w+2; j++) {
@@ -45,12 +45,13 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
     }
 }
 
-void firstBorn(gameField &field, const int h, const int w) {
+void firstBorn(const gameSettings settings, gameField &field, const int h, const int w) {
     for (int i = 0; i < 9; i++) {
         field[h][w].socialGene[i] = rand() % 2;
     }
     field[h][w].isAlive = true;
-    field[h][w].health = field[h][w].maxHealth = 1;
+    if(settings.survivalGene) field[h][w].health = field[h][w].maxHealth = rand() % 4 + 1;
+    else field[h][w].health = field[h][w].maxHealth = 1;
 }
 
 void bornCell(gameField oldField, gameField &newField, const int h, const int w) {
