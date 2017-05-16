@@ -100,12 +100,14 @@ void migrateCell(const gameSettings settings, gameField &field, const int h, con
 
 void logic(const gameSettings settings, gameField &oldField) {
     gameField newField;
+    bool toreador;
     if(settings.socialGene) {
         for(int i = 1; i <= settings.fieldH; i++)
             for(int j = 1; j <= settings.fieldW; j++) {
                 // Перед тем, как будет рассчитано новое поколение,
                 // клетки мигрируют в комфортные условия
-                if (oldField[i][j].isAlive)
+                toreador = !settings.lazyGene || rand() % 10 < 3;
+                if (oldField[i][j].isAlive && toreador)
                     migrateCell(settings, oldField, i, j);
             }
     }
