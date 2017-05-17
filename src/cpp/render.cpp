@@ -17,20 +17,26 @@ void outPeriod(const gameSettings settings) {
     outtextxy(wndW, wndH, buffer);
 }
 
-int calculateCellColor(const gameField field, const int i, const int j){
-    int x, y;
-    if(!field[i][j].isAlive) return COLOR(230, 230, 230);
-    else {
-        x = (127 * field[i][j].health) / field[i][j].maxHealth;
-        y = 127 - x;
-        return COLOR(y, x, 0);
+int calculateCellColor(const gameSettings settings, const gameField field,
+                    const int h, const int w)
+{
+    int red = 0, green = 127, blue = 0;
+    if (field[h][w].isAlive) {
+        if (settings.socialGene) {
+            int activeGene = field[h][w].socialGene;
+            red = socialRed[activeGene];
+            green = socialGreen[activeGene];
+            blue = socialBlue[activeGene];
+        }
+        return COLOR(red, green, blue);
     }
+    else return COLOR(230, 230, 230);
 }
 
 void renderField(const gameSettings settings, const gameField field){
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
-            setfillstyle(SOLID_FILL, calculateCellColor(field, i, j));
+            setfillstyle(SOLID_FILL, calculateCellColor(settings, field, i, j));
             int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
             int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
             bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);

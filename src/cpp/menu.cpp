@@ -65,11 +65,11 @@ void menuSettings(const char *filename, gameSettings &settings) {
         HIGHLIGHT_IF_CHOSEN(3);
         settingMenuString (tempSet, 3, "POPULATION", FORMAT("% 3d%%", tempSet.population));
         HIGHLIGHT_IF_CHOSEN(4);
-        settingMenuString (tempSet, 4, "SOCIALITY GENE", tempSet.socialGene ? "ON" : "OFF");
+        settingMenuString (tempSet, 4, "SOCIALITY GENE", tempSet.socialGene ? " ON" : " OFF");
         HIGHLIGHT_IF_CHOSEN(5);
-        settingMenuString (tempSet, 5, "SURVIVAL GENE", tempSet.survivalGene ? "ON" : "OFF");
+        settingMenuString (tempSet, 5, "SURVIVAL GENE", tempSet.survivalGene ? " ON" : " OFF");
         HIGHLIGHT_IF_CHOSEN(6);
-        settingMenuString (tempSet, 6, "LAZINESS GENE", tempSet.lazyGene ? "ON" : "OFF");
+        settingMenuString (tempSet, 6, "LAZINESS GENE", tempSet.lazyGene ? " ON" : " OFF");
 
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 

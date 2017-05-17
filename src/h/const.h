@@ -22,7 +22,7 @@
 
 // Массив отступов для доступа к каждому соседу
 struct {
-    int h, w; 
+    int h, w;
 } const neighborsOffsets[8] = { {-1, -1}, {-1, 0}, {-1, 1},
                                 {0,  -1},          {0,  1},
                                 {1,  -1}, {1,  0}, {1,  1} };
@@ -33,6 +33,11 @@ inline int calcWindowW(int fieldW) {
 inline int calcWindowH(int fieldH) {
     return fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX + STATUS_BAR_HEIGHT;
 }
+
+// Палитра цветов клеток (для гена социальности)
+const int socialRed[9]   = { 250, 250, 125,   0,   0,   0, 125, 250, 250 };
+const int socialGreen[9] = {   0, 190, 250, 250, 250,  60,   0,   0,   0 };
+const int socialBlue[9]  = {   0,   0,   0,  60, 250, 250, 250, 190,   0 };
 
 const gameSettings defaultSettings = {
     MIN_FIELD_W, MIN_FIELD_H,       // fieldW, fieldH

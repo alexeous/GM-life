@@ -46,9 +46,7 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
 }
 
 void firstBorn(const gameSettings settings, gameField &field, const int h, const int w) {
-    for (int i = 0; i < 9; i++) {
-        field[h][w].socialGene[i] = rand() % 2;
-    }
+    field[h][w].socialGene = rand() % 9;
     field[h][w].isAlive = true;
     if(settings.survivalGene) field[h][w].health = field[h][w].maxHealth = rand() % 4 + 1;
     else field[h][w].health = field[h][w].maxHealth = 1;
@@ -62,7 +60,7 @@ void bornCell(gameField oldField, gameField &newField, const int h, const int w)
     int parentCount = neighborsAlive(oldField, h, w, parents);
 
     int parentIndex = rand() % parentCount;
-    memcpy(newcell.socialGene, parents[parentIndex].socialGene, sizeof(bool)*8);
+    newcell.socialGene = parents[parentIndex].socialGene;
     parentIndex = rand() % parentCount;
     newcell.maxHealth = parents[parentIndex].maxHealth;
     newcell.health = newcell.maxHealth;
@@ -79,7 +77,7 @@ bool wouldMigrateTo(const gameSettings settings, gameField field, int h, int w, 
        field[toH][toW].isAlive)
         return false;
     int neighbors = neighborsAlive(field, toH, toW) - 1;     // минус сама клетка, входящая в число соседей
-    return field[h][w].socialGene[neighbors];
+    return field[h][w].socialGene == neighbors;
 }
 
 void migrateCell(const gameSettings settings, gameField &field, const int h, const int w) {
