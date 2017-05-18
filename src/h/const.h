@@ -18,6 +18,8 @@
 #define MIN_POPULATION 10
 #define MAX_POPULATION 100
 
+#define MAX_AGE 10
+
 #include "struct.h"
 
 // Массив отступов для доступа к каждому соседу

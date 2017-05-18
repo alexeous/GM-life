@@ -10,6 +10,7 @@ struct gameSettings {
 	bool socialGene;
 	bool survivalGene;
 	bool lazyGene;
+	bool aging;
 };
 
 typedef signed char sbyte;
@@ -19,6 +20,7 @@ struct cell {
 	sbyte health;
 	sbyte socialGene;
 	sbyte maxHealth;
+	sbyte age;
 };
 
 #include "const.h"

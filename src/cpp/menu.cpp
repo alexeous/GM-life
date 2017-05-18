@@ -70,12 +70,14 @@ void menuSettings(const char *filename, gameSettings &settings) {
         settingMenuString (tempSet, 5, "SURVIVAL GENE", tempSet.survivalGene ? " ON" : " OFF");
         HIGHLIGHT_IF_CHOSEN(6);
         settingMenuString (tempSet, 6, "LAZINESS GENE", tempSet.lazyGene ? " ON" : " OFF");
+        HIGHLIGHT_IF_CHOSEN(7);
+        settingMenuString (tempSet, 7, "AGING", tempSet.aging ? " ON" : " OFF");
 
         settextjustify(CENTER_TEXT, CENTER_TEXT);
 
-        HIGHLIGHT_IF_CHOSEN(7);
-        centralString(tempSet, 120, "APPLY");
         HIGHLIGHT_IF_CHOSEN(8);
+        centralString(tempSet, 120, "APPLY");
+        HIGHLIGHT_IF_CHOSEN(9);
         centralString(tempSet, 150, "CANCEL");
 
         key = getch();
@@ -90,6 +92,7 @@ void menuSettings(const char *filename, gameSettings &settings) {
                 case 4:     tempSet.socialGene = !tempSet.socialGene; break;
                 case 5:     tempSet.survivalGene = !tempSet.survivalGene; break;
                 case 6:     tempSet.lazyGene = !tempSet.lazyGene; break;
+                case 7:     tempSet.aging = !tempSet.aging; break;
             }
             break;
         case KEY_RIGHT:
@@ -100,13 +103,14 @@ void menuSettings(const char *filename, gameSettings &settings) {
                 case 4:     tempSet.socialGene = !tempSet.socialGene; break;
                 case 5:     tempSet.survivalGene = !tempSet.survivalGene; break;
                 case 6:     tempSet.lazyGene = !tempSet.lazyGene; break;
+                case 7:     tempSet.aging = !tempSet.aging; break;
             }
             break;
         case VK_RETURN:
             switch(menuPoint) {
-                case 7: applyChanges(filename, settings, tempSet); // "APPLY"
+                case 8: applyChanges(filename, settings, tempSet); // "APPLY"
                         return;
-                case 8: return; // "CANCEL"
+                case 9: return; // "CANCEL"
             }
             break;
         case VK_ESCAPE: return;    // Выход в главное меню по нажатию Escape

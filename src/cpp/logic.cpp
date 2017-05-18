@@ -50,6 +50,7 @@ void firstBorn(const gameSettings settings, gameField &field, const int h, const
     field[h][w].isAlive = true;
     if(settings.survivalGene) field[h][w].health = field[h][w].maxHealth = rand() % 4 + 1;
     else field[h][w].health = field[h][w].maxHealth = 1;
+    field[h][w].age = 0;
 }
 
 void bornCell(gameField oldField, gameField &newField, const int h, const int w) {
@@ -64,12 +65,21 @@ void bornCell(gameField oldField, gameField &newField, const int h, const int w)
     parentIndex = rand() % parentCount;
     newcell.maxHealth = parents[parentIndex].maxHealth;
     newcell.health = newcell.maxHealth;
+    newcell.age = 0;
 }
 
 void harmCell(gameField &field, const int h, const int w) {
     if(field[h][w].health > 0) field[h][w].health--;
     if(field[h][w].health <= 0)
         field[h][w].isAlive = false;
+}
+
+void cellAging(const gameSettings settings, gameField &field, int h, int w){
+	cell &c = field[h][w];
+	if(c.isAlive){
+		if(c.age < MAX_AGE) c.age++;
+		if(c.age >= MAX_AGE) c.isAlive = false;	
+	}
 }
 
 bool wouldMigrateTo(const gameSettings settings, gameField field, int h, int w, int toH, int toW) {
@@ -119,6 +129,7 @@ void logic(const gameSettings settings, gameField &oldField) {
             } else {    // Теряет здоровье, когда меньше 2 или больше 3 соседей:
                 if(neighbors < 2 || neighbors > 3) harmCell(newField, i, j);
             }
+            if(settings.aging) cellAging(settings, newField, i, j);
         }
 	}
 	copyField(settings, oldField, newField);
