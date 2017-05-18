@@ -89,13 +89,19 @@ CTEST(logic_suite, harm_cell) {
     startGame(settings, field);
 
     int h = 1, w = 1;
+
     field[h][w].isAlive = true;
     field[h][w].health = 2;
-
     harmCell(field, h, w);
     ASSERT_TRUE(field[h][w].isAlive && field[h][w].health == 1);
+
+    field[h][w].isAlive = true;
+    field[h][w].health = 1;
     harmCell(field, h, w);
     ASSERT_TRUE(!field[h][w].isAlive && field[h][w].health == 0);
+
+    field[h][w].isAlive = false;
+    field[h][w].health = 0;
     harmCell(field, h, w);
-    ASSERT_TRUE(!field[h][w].isAlive && field[h][w].health == -1);
+    ASSERT_TRUE(!field[h][w].isAlive && field[h][w].health == 0);
 }

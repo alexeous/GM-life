@@ -67,7 +67,8 @@ void bornCell(gameField oldField, gameField &newField, const int h, const int w)
 }
 
 void harmCell(gameField &field, const int h, const int w) {
-    if(--field[h][w].health <= 0)
+    if(field[h][w].health > 0) field[h][w].health--;
+    if(field[h][w].health <= 0)
         field[h][w].isAlive = false;
 }
 
