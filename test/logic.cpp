@@ -82,6 +82,37 @@ CTEST(logic_suite, neighbors_counting) {
     ASSERT_EQUAL(1, neighborsAlive(field, 3, 3));
 }
 
+CTEST(logic_suite, born_cell) {
+    gameField oldField;
+    gameField newField;
+    gameSettings settings = defaultSettings;
+    settings.population = 0;
+    startGame(settings, oldField);
+    startGame(settings, newField);
+
+    int h = 1, w = 1;
+    cell &deadCell = oldField[h][w];
+    cell &parentCell = oldField[h + 1][w + 1];
+    cell &newCell = newField[h][w];
+
+    deadCell.isAlive = false;
+    deadCell.health = 0;
+    deadCell.socialGene = false;
+    deadCell.maxHealth = 1;
+
+    parentCell.isAlive = true;
+    parentCell.health = 1;
+    parentCell.socialGene = true;
+    parentCell.maxHealth = 3;
+
+    bornCell(oldField, newField, h, w);
+
+    ASSERT_TRUE(newCell.isAlive == parentCell.isAlive);
+    ASSERT_TRUE(newCell.health > 0);
+    ASSERT_TRUE(newCell.socialGene == parentCell.socialGene);
+    ASSERT_TRUE(newCell.maxHealth == parentCell.maxHealth);
+}
+
 CTEST(logic_suite, harm_cell) {
     gameField field;
     gameSettings settings = defaultSettings;
