@@ -42,11 +42,14 @@ CTEST(logic_suite, field_copying) {
     gameSettings settings = defaultSettings;
     startGame(settings, fieldSrc);
     copyField(settings, fieldDest, fieldSrc);
-    bool flag = true;
-    for(int i = 0; i < settings.fieldH + 2; i++) 
-        for(int j = 0; j < settings.fieldW + 2; j++)
-            flag &= (fieldSrc[i][j].isAlive == fieldDest[i][j].isAlive);
-    ASSERT_TRUE(flag);
+    for(int i = 1; i <= settings.fieldH; i++) {
+        for(int j = 1; j <= settings.fieldW; j++) {
+            ASSERT_TRUE(fieldSrc[i][j].isAlive == fieldDest[i][j].isAlive);
+            ASSERT_TRUE(fieldSrc[i][j].health == fieldDest[i][j].health);
+            ASSERT_TRUE(fieldSrc[i][j].socialGene == fieldDest[i][j].socialGene);
+            ASSERT_TRUE(fieldSrc[i][j].maxHealth == fieldDest[i][j].maxHealth);
+        }
+    }
 }
 
 CTEST(logic_suite, neighbors_counting) {
@@ -77,4 +80,22 @@ CTEST(logic_suite, neighbors_counting) {
     ASSERT_EQUAL(1, neighborsAlive(field, 3, 1));
     ASSERT_EQUAL(1, neighborsAlive(field, 3, 2));
     ASSERT_EQUAL(1, neighborsAlive(field, 3, 3));
+}
+
+CTEST(logic_suite, harm_cell) {
+    gameField field;
+    gameSettings settings = defaultSettings;
+    settings.population = 0;
+    startGame(settings, field);
+
+    int h = 1, w = 1;
+    field[h][w].isAlive = true;
+    field[h][w].health = 2;
+
+    harmCell(field, h, w);
+    ASSERT_TRUE(field[h][w].isAlive && field[h][w].health == 1);
+    harmCell(field, h, w);
+    ASSERT_TRUE(!field[h][w].isAlive && field[h][w].health == 0);
+    harmCell(field, h, w);
+    ASSERT_TRUE(!field[h][w].isAlive && field[h][w].health == -1);
 }
