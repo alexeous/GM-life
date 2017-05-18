@@ -25,7 +25,8 @@ int main() {
 		long prevFrameTime = getTime();
 		do {
 			event(settings, run);			// обрабатываем события (клавиатура)
-			if(run && (getTime() - prevFrameTime > settings.period)) { // логика и рендер только раз в период
+			long frameTime = getTime() - prevFrameTime;
+			if(run && !settings.pause && frameTime > settings.period) { // логика и рендер только раз в период
 				prevFrameTime = getTime();	// обновляем время начала текущего кадра,
 				logic(settings, field);		// обрабатываем логику игры
 				renderField(settings, field);	// и рисуем поле на экране.

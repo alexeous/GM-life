@@ -5,6 +5,7 @@ struct gameSettings {
 	int fieldW, fieldH;
 	int windowW, windowH;
 	int period;		// Интервал между ходами (в миллисекундах)
+	bool pause;		// Поставлена ли игра на паузу
 	int population;    // Численность популяции (в процентах)
 	bool socialGene;
 	bool survivalGene;

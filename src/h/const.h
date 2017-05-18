@@ -40,11 +40,12 @@ const int socialGreen[9] = {   0, 190, 250, 250, 250,  60,   0,   0,   0 };
 const int socialBlue[9]  = {   0,   0,   0,  60, 250, 250, 250, 190,   0 };
 
 const gameSettings defaultSettings = {
-    MIN_FIELD_W, MIN_FIELD_H,       // fieldW, fieldH
+    MIN_FIELD_W, MIN_FIELD_H,  // fieldW, fieldH
     calcWindowW(MIN_FIELD_W),  //screenW
     calcWindowH(MIN_FIELD_H),  //screenH
-    1000,        // period
-    20,      // population
+    1000,     // period
+    false,    // pause
+    20,       // population
     false,    // socialGene
 	false,    // survivalGene
 	false     // lazyGene
