@@ -144,6 +144,8 @@ CTEST(logic_suite, migrate_cell) {
     startGame(settings, field);
 
     int h = 2, w = 2;
+
+    // Единственное подходящее место
     field[h][w].isAlive = true;
     field[h][w].health = 1;
     field[h][w].socialGene = 4;
@@ -151,9 +153,9 @@ CTEST(logic_suite, migrate_cell) {
 
     field[h - 1][w    ].isAlive = true;
     field[h - 1][w + 1].isAlive = true;
-    field[h    ][w + 2].isAlive = true;
     field[h + 1][w - 1].isAlive = true;
     field[h + 1][w    ].isAlive = true;
+    field[h + 1][w + 1].isAlive = true;
 
     migrateCell(settings, field, h, w);
     ASSERT_FALSE(field[h][w].isAlive);
@@ -162,6 +164,32 @@ CTEST(logic_suite, migrate_cell) {
     ASSERT_TRUE(field[h][w + 1].socialGene == field[h][w].socialGene);
     ASSERT_TRUE(field[h][w + 1].maxHealth == field[h][w].maxHealth);
 
+    // Два подходящих места
+    startGame(settings, field);
+    field[h][w].isAlive = true;
+    field[h][w].health = 1;
+    field[h][w].socialGene = 4;
+    field[h][w].maxHealth = 3;
+    field[h][w - 1] = field[h][w + 1] = { 0, 0, 0, 0 };
+
+    field[h - 1][w - 1].isAlive = true;
+    field[h - 1][w    ].isAlive = true;
+    field[h - 1][w + 1].isAlive = true;
+    field[h + 1][w - 1].isAlive = true;
+    field[h + 1][w    ].isAlive = true;
+    field[h + 1][w + 1].isAlive = true;
+
+    migrateCell(settings, field, h, w);
+    ASSERT_FALSE(field[h][w].isAlive);
+    ASSERT_TRUE((field[h][w - 1].isAlive) xor (field[h][w + 1].isAlive));
+    ASSERT_TRUE((field[h][w - 1].health == field[h][w].health) xor
+                (field[h][w + 1].health == field[h][w].health));
+    ASSERT_TRUE((field[h][w - 1].socialGene == field[h][w].socialGene) xor
+                (field[h][w + 1].socialGene == field[h][w].socialGene));
+    ASSERT_TRUE((field[h][w - 1].maxHealth == field[h][w].maxHealth) xor
+                (field[h][w + 1].maxHealth == field[h][w].maxHealth));
+
+    // Нет подходящих мест
     startGame(settings, field);
     field[h][w].isAlive = true;
     field[h][w].health = 1;
