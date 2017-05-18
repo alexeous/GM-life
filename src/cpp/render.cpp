@@ -18,7 +18,7 @@ void outPeriod(const gameSettings settings) {
 }
 
 int calculateCellColor(const gameSettings settings, const gameField field,
-                    const int h, const int w)
+                       const int h, const int w)
 {
     int red = 0, green = 127, blue = 0;
     if (field[h][w].isAlive) {
