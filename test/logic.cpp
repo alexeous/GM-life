@@ -97,17 +97,17 @@ CTEST(logic_suite, born_cell) {
 
     deadCell.isAlive = false;
     deadCell.health = 0;
-    deadCell.socialGene = false;
+    deadCell.socialGene = 0;
     deadCell.maxHealth = 1;
 
     parentCell.isAlive = true;
     parentCell.health = 1;
-    parentCell.socialGene = true;
+    parentCell.socialGene = 5;
     parentCell.maxHealth = 3;
 
     bornCell(oldField, newField, h, w);
 
-    ASSERT_TRUE(newCell.isAlive == parentCell.isAlive);
+    ASSERT_TRUE(newCell.isAlive);
     ASSERT_TRUE(newCell.health > 0);
     ASSERT_TRUE(newCell.socialGene == parentCell.socialGene);
     ASSERT_TRUE(newCell.maxHealth == parentCell.maxHealth);
@@ -135,4 +135,40 @@ CTEST(logic_suite, harm_cell) {
     field[h][w].health = 0;
     harmCell(field, h, w);
     ASSERT_TRUE(!field[h][w].isAlive && field[h][w].health == 0);
+}
+
+CTEST(logic_suite, migrate_cell) {
+    gameField field;
+    gameSettings settings = defaultSettings;
+    settings.population = 0;
+    startGame(settings, field);
+
+    int h = 2, w = 2;
+    field[h][w].isAlive = true;
+    field[h][w].health = 1;
+    field[h][w].socialGene = 4;
+    field[h][w].maxHealth = 3;
+
+    field[h - 1][w    ].isAlive = true;
+    field[h - 1][w + 1].isAlive = true;
+    field[h    ][w + 2].isAlive = true;
+    field[h + 1][w - 1].isAlive = true;
+    field[h + 1][w    ].isAlive = true;
+
+    migrateCell(settings, field, h, w);
+    ASSERT_FALSE(field[h][w].isAlive);
+    ASSERT_TRUE(field[h][w + 1].isAlive);
+    ASSERT_TRUE(field[h][w + 1].health == field[h][w].health);
+    ASSERT_TRUE(field[h][w + 1].socialGene == field[h][w].socialGene);
+    ASSERT_TRUE(field[h][w + 1].maxHealth == field[h][w].maxHealth);
+
+    startGame(settings, field);
+    field[h][w].isAlive = true;
+    field[h][w].health = 1;
+    field[h][w].socialGene = 4;
+    field[h][w].maxHealth = 3;
+
+    migrateCell(settings, field, h, w);
+    ASSERT_FALSE(neighborsAlive(field, h, w));
+    ASSERT_TRUE(field[h][w].isAlive);
 }
