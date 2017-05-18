@@ -5,18 +5,6 @@
 #include "struct.h"
 #include <iostream>
 
-void outPeriod(const gameSettings settings) {
-    int wndW = settings.windowW, wndH = settings.windowH;
-    setfillstyle(SOLID_FILL, WHITE);
-    bar(wndW - 105, wndH - STATUS_BAR_HEIGHT, wndW - 48, wndH);   // очистка старой надписи
-    settextstyle(COMPLEX_FONT, 0, 1);
-    settextjustify(RIGHT_TEXT, BOTTOM_TEXT);
-    setcolor(DARKGRAY);
-    char buffer[20];
-    sprintf(buffer, "%2.1f s     ", settings.period / 1000.0f);
-    outtextxy(wndW, wndH, buffer);
-}
-
 int calculateCellColor(const gameSettings settings, const gameField field,
                     const int h, const int w)
 {
@@ -44,11 +32,38 @@ void renderField(const gameSettings settings, const gameField field){
     }
 }
 
+void outPeriod(const gameSettings settings) {
+    int wndW = settings.windowW, wndH = settings.windowH;
+    setfillstyle(SOLID_FILL, WHITE);
+    bar(wndW - 105, wndH - STATUS_BAR_HEIGHT, wndW - 48, wndH);   // очистка старой надписи
+    settextstyle(COMPLEX_FONT, 0, 1);
+    settextjustify(RIGHT_TEXT, BOTTOM_TEXT);
+    setcolor(DARKGRAY);
+    char buffer[20];
+    sprintf(buffer, "%2.1f s     ", settings.period / 1000.0f);
+    outtextxy(wndW, wndH, buffer);
+}
+
+void outPause(const gameSettings settings) {
+    int wndH = settings.windowH;
+    settextjustify(LEFT_TEXT, BOTTOM_TEXT);
+    setfillstyle(SOLID_FILL, WHITE);
+    setcolor(DARKGRAY);
+    bar(110, wndH - STATUS_BAR_HEIGHT, 250, wndH); 
+    bar3d(115, wndH - 19, 170, wndH - 2, 2, true);
+    outtextxy(118, wndH, settings.pause ? "Space unpause" : "Space pause");
+}
+
 void renderStatusBar(const gameSettings settings, bool firstDraw) {
     static int oldPeriod = -1;
     if(firstDraw || oldPeriod != settings.period) {
         oldPeriod = settings.period;
         outPeriod(settings);
+    }
+    static bool oldPause = false;
+    if(firstDraw || oldPause != settings.pause) {
+        oldPause = settings.pause;
+        outPause(settings);
     }
     if(firstDraw) {
         int wndW = settings.windowW, wndH = settings.windowH;
@@ -64,7 +79,7 @@ void renderStatusBar(const gameSettings settings, bool firstDraw) {
         line(wndW - 40, wndH - 10, wndW - 31, wndH -10);
         line(wndW - 31, wndH -10, wndW - 35, wndH - 14);
         line(wndW - 31, wndH -10, wndW - 35, wndH - 6);
-
+        
         bar3d(1, wndH - 19, 36, wndH - 2, 2, true);
         settextjustify(LEFT_TEXT, BOTTOM_TEXT);
         outtextxy(4, wndH, "Esc menu");
