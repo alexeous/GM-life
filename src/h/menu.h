@@ -2,7 +2,7 @@
 #define MENU_H
 
 #define MAIN_MENU_POINTS 3
-#define SETT_MENU_POINTS 8
+#define SETT_MENU_POINTS 9
 
 #include "struct.h"
 
