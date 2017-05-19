@@ -78,7 +78,7 @@ void cellAging(const gameSettings settings, gameField &field, int h, int w){
 	cell &c = field[h][w];
 	if(c.isAlive){
 		if(c.age < MAX_AGE) c.age++;
-		if(c.age >= MAX_AGE) c.isAlive = false;	
+		else c.isAlive = false;
 	}
 }
 

@@ -50,7 +50,8 @@ const gameSettings defaultSettings = {
     20,       // population
     false,    // socialGene
 	false,    // survivalGene
-	false     // lazyGene
+	false,    // lazyGene
+	false     // aging
 };
 
 #endif // CONST_H
