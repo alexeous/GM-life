@@ -28,6 +28,16 @@ void renderField(const gameSettings settings, const gameField field){
             int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
             int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
             bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
+
+            if (settings.survivalGene &&
+                    field[i][j].isAlive && field[i][j].maxHealth > 1) {
+                int rate = field[i][j].maxHealth - 1;
+                setcolor(calculateCellColor(settings, field, i, j) / 2);
+                setfillstyle(SOLID_FILL, calculateCellColor(settings, field, i, j) / 2);
+                bar(left, top, left + rate, top + CELL_SIZE_PX - 1);
+                bar(left, top + CELL_SIZE_PX - 1 - rate,
+                    left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
+            }
         }
     }
 }
@@ -49,7 +59,7 @@ void outPause(const gameSettings settings) {
     settextjustify(LEFT_TEXT, BOTTOM_TEXT);
     setfillstyle(SOLID_FILL, WHITE);
     setcolor(DARKGRAY);
-    bar(110, wndH - STATUS_BAR_HEIGHT, 250, wndH); 
+    bar(110, wndH - STATUS_BAR_HEIGHT, 250, wndH);
     bar3d(115, wndH - 19, 170, wndH - 2, 2, true);
     outtextxy(118, wndH, settings.pause ? "Space unpause" : "Space pause");
 }
@@ -79,7 +89,7 @@ void renderStatusBar(const gameSettings settings, bool firstDraw) {
         line(wndW - 40, wndH - 10, wndW - 31, wndH -10);
         line(wndW - 31, wndH -10, wndW - 35, wndH - 14);
         line(wndW - 31, wndH -10, wndW - 35, wndH - 6);
-        
+
         bar3d(1, wndH - 19, 36, wndH - 2, 2, true);
         settextjustify(LEFT_TEXT, BOTTOM_TEXT);
         outtextxy(4, wndH, "Esc menu");

@@ -48,7 +48,8 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
 void firstBorn(const gameSettings settings, gameField &field, const int h, const int w) {
     field[h][w].socialGene = rand() % 9;
     field[h][w].isAlive = true;
-    if(settings.survivalGene) field[h][w].health = field[h][w].maxHealth = rand() % 4 + 1;
+    if(settings.survivalGene)
+        field[h][w].health = field[h][w].maxHealth = rand() % (MAX_HEALTH - 1) + 1;
     else field[h][w].health = field[h][w].maxHealth = 1;
     field[h][w].age = 0;
 }
