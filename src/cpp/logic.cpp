@@ -10,10 +10,12 @@ void startGame(const gameSettings settings, gameField &field) {
 	int h = settings.fieldH;
 	for(int i = 0; i < h+2; i++) {
 		field[i][0].isAlive = field[i][w+1].isAlive = false;	// заполняем клетки по бокам поля
-		for(int j = 1; j <= w; j++)
+		for(int j = 1; j <= w; j++) {
             if(rand() % 100 < settings.population)
                 firstBorn(settings, field, i, j);
             else field[i][j].isAlive = false;
+            field[i][j].needRefresh = true;
+		}
 	}
 	for(int j = 0; j < w+2; j++) {
 		field[0][j].isAlive = field[h+1][j].isAlive = false;	// заполняем клетки сверху и снизу поля
@@ -108,6 +110,18 @@ void migrateCell(const gameSettings settings, gameField &field, const int h, con
     }
 }
 
+bool needRefreshCell(const gameSettings settings, const gameField oldField,
+                     const gameField newField, const int h, const int w)
+{
+    bool flag = false;
+    if (oldField[h][w].isAlive != newField[h][w].isAlive) flag = true;
+    if (settings.socialGene &&
+        oldField[h][w].socialGene != newField[h][w].socialGene) flag = true;
+    if (settings.survivalGene &&
+        oldField[h][w].maxHealth != newField[h][w].maxHealth) flag = true;
+    return flag;
+}
+
 void logic(const gameSettings settings, gameField &oldField) {
     gameField newField;
     bool toreador;
@@ -119,6 +133,8 @@ void logic(const gameSettings settings, gameField &oldField) {
                 toreador = !settings.lazyGene || rand() % 10 < 3;
                 if (oldField[i][j].isAlive && toreador)
                     migrateCell(settings, oldField, i, j);
+                oldField[i][j].needRefresh =
+                        needRefreshCell(settings, oldField, newField, i, j);
             }
     }
 	copyField(settings, newField, oldField);
@@ -131,6 +147,8 @@ void logic(const gameSettings settings, gameField &oldField) {
                 if(neighbors < 2 || neighbors > 3) harmCell(newField, i, j);
             }
             if(settings.aging) cellAging(settings, newField, i, j);
+            newField[i][j].needRefresh =
+                    needRefreshCell(settings, oldField, newField, i, j);
         }
 	}
 	copyField(settings, oldField, newField);

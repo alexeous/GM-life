@@ -21,22 +21,24 @@ int calculateCellColor(const gameSettings settings, const gameField field,
     else return COLOR(230, 230, 230);
 }
 
-void renderField(const gameSettings settings, const gameField field){
+void renderField(const gameSettings settings, const gameField field) {
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
-            setfillstyle(SOLID_FILL, calculateCellColor(settings, field, i, j));
-            int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
-            int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
-            bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
+            if (field[i][j].needRefresh) {
+                setfillstyle(SOLID_FILL, calculateCellColor(settings, field, i, j));
+                int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
+                int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
+                bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
 
-            if (settings.survivalGene &&
-                    field[i][j].isAlive && field[i][j].maxHealth > 1) {
-                int rate = field[i][j].maxHealth - 1;
-                setcolor(calculateCellColor(settings, field, i, j) / 2);
-                setfillstyle(SOLID_FILL, calculateCellColor(settings, field, i, j) / 2);
-                bar(left, top, left + rate, top + CELL_SIZE_PX - 1);
-                bar(left, top + CELL_SIZE_PX - 1 - rate,
-                    left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
+                if (settings.survivalGene &&
+                        field[i][j].isAlive && field[i][j].maxHealth > 1) {
+                    int rate = field[i][j].maxHealth - 1;
+                    setcolor(calculateCellColor(settings, field, i, j) / 2);
+                    setfillstyle(SOLID_FILL, calculateCellColor(settings, field, i, j) / 2);
+                    bar(left, top, left + rate, top + CELL_SIZE_PX - 1);
+                    bar(left, top + CELL_SIZE_PX - 1 - rate,
+                        left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
+                }
             }
         }
     }

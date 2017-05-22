@@ -21,6 +21,7 @@ struct cell {
 	sbyte socialGene;
 	sbyte maxHealth;
 	sbyte age;
+	bool needRefresh;    // Показывает, нужно ли перерисовывать клетку
 };
 
 #include "const.h"
