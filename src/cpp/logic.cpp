@@ -10,10 +10,12 @@ void startGame(const gameSettings settings, gameField &field) {
 	int h = settings.fieldH;
 	for(int i = 0; i < h+2; i++) {
 		field[i][0].isAlive = field[i][w+1].isAlive = false;	// заполняем клетки по бокам поля
-		for(int j = 1; j <= w; j++)
+		for(int j = 1; j <= w; j++) {
             if(rand() % 100 < settings.population)
                 firstBorn(settings, field, i, j);
             else field[i][j].isAlive = false;
+            field[i][j].needRefresh = true;
+		}
 	}
 	for(int j = 0; j < w+2; j++) {
 		field[0][j].isAlive = field[h+1][j].isAlive = false;	// заполняем клетки сверху и снизу поля
@@ -48,9 +50,11 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
 void firstBorn(const gameSettings settings, gameField &field, const int h, const int w) {
     field[h][w].socialGene = rand() % 9;
     field[h][w].isAlive = true;
-    if(settings.survivalGene) field[h][w].health = field[h][w].maxHealth = rand() % 4 + 1;
+    if(settings.survivalGene)
+        field[h][w].health = field[h][w].maxHealth = (rand() % MAX_HEALTH) + 1;
     else field[h][w].health = field[h][w].maxHealth = 1;
     field[h][w].age = 0;
+    field[h][w].needRefresh = true;
 }
 
 void bornCell(gameField oldField, gameField &newField, const int h, const int w) {
@@ -66,19 +70,24 @@ void bornCell(gameField oldField, gameField &newField, const int h, const int w)
     newcell.maxHealth = parents[parentIndex].maxHealth;
     newcell.health = newcell.maxHealth;
     newcell.age = 0;
+    newcell.needRefresh = true;
 }
 
 void harmCell(gameField &field, const int h, const int w) {
     if(field[h][w].health > 0) field[h][w].health--;
     if(field[h][w].health <= 0)
         field[h][w].isAlive = false;
+    field[h][w].needRefresh = true;
 }
 
 void cellAging(const gameSettings settings, gameField &field, int h, int w){
 	cell &c = field[h][w];
 	if(c.isAlive){
 		if(c.age < MAX_AGE) c.age++;
-		else c.isAlive = false;
+		else {
+            c.isAlive = false;
+            c.needRefresh = true;
+        }
 	}
 }
 
@@ -103,7 +112,9 @@ void migrateCell(const gameSettings settings, gameField &field, const int h, con
     if(!comfortCells.empty()) {
         cell *destination = comfortCells[rand() % comfortCells.size()];
         *destination = field[h][w];
+        destination->needRefresh = true;
         field[h][w].isAlive = false;
+        field[h][w].needRefresh = true;
     }
 }
 

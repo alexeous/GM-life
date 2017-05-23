@@ -19,6 +19,7 @@
 #define MAX_POPULATION 100
 
 #define MAX_AGE 10
+#define MAX_HEALTH 4
 
 #include "struct.h"
 
