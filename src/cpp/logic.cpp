@@ -55,8 +55,8 @@ void firstBorn(const gameSettings settings, gameField &field, const int h, const
     else field[h][w].health = field[h][w].maxHealth = 1;
     field[h][w].age = 0;
     field[h][w].needRefresh = true;
-    if(settings.lazyGene) 
-    	if((rand() % 2 + 1) == 1) field[h][w].moving = rand() % 10;
+    if(settings.lazyGene && rand() % 2 == 1) field[h][w].isLazy = true;
+    else field[h][w].isLazy = false;
 }
 
 void bornCell(gameField oldField, gameField &newField, const int h, const int w) {
@@ -74,7 +74,7 @@ void bornCell(gameField oldField, gameField &newField, const int h, const int w)
     newcell.age = 0;
     newcell.needRefresh = true;
     parentIndex = rand() % parentCount;
-    newcell.moving = parents[parentIndex].moving;
+    newcell.isLazy = parents[parentIndex].isLazy;
 }
 
 void harmCell(gameField &field, const int h, const int w) {
@@ -124,12 +124,14 @@ void migrateCell(const gameSettings settings, gameField &field, const int h, con
 
 void logic(const gameSettings settings, gameField &oldField) {
     gameField newField;
+    bool toreador;
     if(settings.socialGene) {
         for(int i = 1; i <= settings.fieldH; i++)
             for(int j = 1; j <= settings.fieldW; j++) {
                 // Перед тем, как будет рассчитано новое поколение,
                 // клетки мигрируют в комфортные условия
-                if (oldField[i][j].isAlive && oldField[i][j].moving < 3)
+                toreador = oldField[i][j].isLazy == true && rand() % 10 < 3;
+                if (oldField[i][j].isAlive && toreador)
                     migrateCell(settings, oldField, i, j);
             }
     }
