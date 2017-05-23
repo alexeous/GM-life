@@ -17,6 +17,7 @@ typedef signed char sbyte;
 
 struct cell {
 	bool isAlive;
+	bool isLazy;
 	sbyte health;
 	sbyte socialGene;
 	sbyte maxHealth;
