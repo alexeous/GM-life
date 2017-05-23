@@ -28,7 +28,7 @@ inline int mulColor(const int color, const float factor) {
     return COLOR(r, g, b);
 }
 
-void renderField(const gameSettings settings, const gameField field) {
+void renderField(const gameSettings settings, gameField &field) {
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
             if (field[i][j].needRefresh) {
@@ -38,14 +38,14 @@ void renderField(const gameSettings settings, const gameField field) {
                 int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
                 bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
 
-                if (settings.survivalGene &&
-                        field[i][j].isAlive && field[i][j].maxHealth > 1) {
+                if (field[i][j].isAlive && field[i][j].maxHealth > 1) {
                     int rate = field[i][j].maxHealth - 1;
                     setfillstyle(SOLID_FILL, mulColor(color, 0.65f));
                     bar(left, top, left + rate, top + CELL_SIZE_PX - 1);
                     bar(left, top + CELL_SIZE_PX - 1 - rate,
                         left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
                 }
+                field[i][j].needRefresh = false;
             }
         }
     }

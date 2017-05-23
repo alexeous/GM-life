@@ -51,9 +51,10 @@ void firstBorn(const gameSettings settings, gameField &field, const int h, const
     field[h][w].socialGene = rand() % 9;
     field[h][w].isAlive = true;
     if(settings.survivalGene)
-        field[h][w].health = field[h][w].maxHealth = rand() % (MAX_HEALTH - 1) + 1;
+        field[h][w].health = field[h][w].maxHealth = (rand() % MAX_HEALTH) + 1;
     else field[h][w].health = field[h][w].maxHealth = 1;
     field[h][w].age = 0;
+    field[h][w].needRefresh = true;
 }
 
 void bornCell(gameField oldField, gameField &newField, const int h, const int w) {
@@ -69,19 +70,24 @@ void bornCell(gameField oldField, gameField &newField, const int h, const int w)
     newcell.maxHealth = parents[parentIndex].maxHealth;
     newcell.health = newcell.maxHealth;
     newcell.age = 0;
+    newcell.needRefresh = true;
 }
 
 void harmCell(gameField &field, const int h, const int w) {
     if(field[h][w].health > 0) field[h][w].health--;
     if(field[h][w].health <= 0)
         field[h][w].isAlive = false;
+    field[h][w].needRefresh = true;
 }
 
 void cellAging(const gameSettings settings, gameField &field, int h, int w){
 	cell &c = field[h][w];
 	if(c.isAlive){
 		if(c.age < MAX_AGE) c.age++;
-		else c.isAlive = false;
+		else {
+            c.isAlive = false;
+            c.needRefresh = true;
+        }
 	}
 }
 
@@ -106,20 +112,10 @@ void migrateCell(const gameSettings settings, gameField &field, const int h, con
     if(!comfortCells.empty()) {
         cell *destination = comfortCells[rand() % comfortCells.size()];
         *destination = field[h][w];
+        destination->needRefresh = true;
         field[h][w].isAlive = false;
+        field[h][w].needRefresh = true;
     }
-}
-
-bool needRefreshCell(const gameSettings settings, const gameField oldField,
-                     const gameField newField, const int h, const int w)
-{
-    bool flag = false;
-    if (oldField[h][w].isAlive != newField[h][w].isAlive) flag = true;
-    if (settings.socialGene &&
-        oldField[h][w].socialGene != newField[h][w].socialGene) flag = true;
-    if (settings.survivalGene &&
-        oldField[h][w].maxHealth != newField[h][w].maxHealth) flag = true;
-    return flag;
 }
 
 void logic(const gameSettings settings, gameField &oldField) {
@@ -133,8 +129,6 @@ void logic(const gameSettings settings, gameField &oldField) {
                 toreador = !settings.lazyGene || rand() % 10 < 3;
                 if (oldField[i][j].isAlive && toreador)
                     migrateCell(settings, oldField, i, j);
-                oldField[i][j].needRefresh =
-                        needRefreshCell(settings, oldField, newField, i, j);
             }
     }
 	copyField(settings, newField, oldField);
@@ -147,8 +141,6 @@ void logic(const gameSettings settings, gameField &oldField) {
                 if(neighbors < 2 || neighbors > 3) harmCell(newField, i, j);
             }
             if(settings.aging) cellAging(settings, newField, i, j);
-            newField[i][j].needRefresh =
-                    needRefreshCell(settings, oldField, newField, i, j);
         }
 	}
 	copyField(settings, oldField, newField);
