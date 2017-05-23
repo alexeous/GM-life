@@ -21,11 +21,19 @@ int calculateCellColor(const gameSettings settings, const gameField field,
     else return COLOR(230, 230, 230);
 }
 
+inline int mulColor(const int color, const float factor) {
+    unsigned char r = (color & 0xFF) * factor;
+    unsigned char g = ((color >> 8) & 0xFF) * factor;
+    unsigned char b = ((color >> 16) & 0xFF) * factor;
+    return COLOR(r, g, b);
+}
+
 void renderField(const gameSettings settings, const gameField field) {
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
             if (field[i][j].needRefresh) {
-                setfillstyle(SOLID_FILL, calculateCellColor(settings, field, i, j));
+                int color = calculateCellColor(settings, field, i, j);
+                setfillstyle(SOLID_FILL, color);
                 int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
                 int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
                 bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
@@ -33,8 +41,7 @@ void renderField(const gameSettings settings, const gameField field) {
                 if (settings.survivalGene &&
                         field[i][j].isAlive && field[i][j].maxHealth > 1) {
                     int rate = field[i][j].maxHealth - 1;
-                    setcolor(calculateCellColor(settings, field, i, j) / 2);
-                    setfillstyle(SOLID_FILL, calculateCellColor(settings, field, i, j) / 2);
+                    setfillstyle(SOLID_FILL, mulColor(color, 0.65f));
                     bar(left, top, left + rate, top + CELL_SIZE_PX - 1);
                     bar(left, top + CELL_SIZE_PX - 1 - rate,
                         left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
