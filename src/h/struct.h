@@ -13,6 +13,7 @@ struct gameSettings {
 	bool aging;
 };
 
+typedef unsigned char byte;
 typedef signed char sbyte;
 
 struct cell {

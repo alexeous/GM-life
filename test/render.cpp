@@ -16,14 +16,14 @@ CTEST(render_suite, calculating_cell_color) {
     settings.socialGene = false;
     field[h][w].isAlive = false;
     expected = COLOR(230, 230, 230);
-    real = calculateCellColor(settings, field, h, w);
+    real = calculateCellColor(settings, field[h][w]);
     ASSERT_EQUAL(expected, real);
 
     // Живая клетка
     settings.socialGene = false;
     field[h][w].isAlive = true;
-    expected = COLOR(0, 127, 0);
-    real = calculateCellColor(settings, field, h, w);
+    expected = COLOR(71, 181, 16);
+    real = calculateCellColor(settings, field[h][w]);
     ASSERT_EQUAL(expected, real);
 
     // Включен ген социальности
@@ -32,7 +32,7 @@ CTEST(render_suite, calculating_cell_color) {
     for (int i = 0; i < 9; i++) {
         field[h][w].socialGene = i;
         expected = COLOR(socialRed[i], socialGreen[i], socialBlue[i]);
-        real = calculateCellColor(settings, field, h, w);
+        real = calculateCellColor(settings, field[h][w]);
         ASSERT_EQUAL(expected, real);
     }
 }
