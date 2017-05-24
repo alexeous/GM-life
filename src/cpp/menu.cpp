@@ -89,9 +89,11 @@ void menuSettings(const char *filename, gameSettings &settings) {
                 case 1:     if(tempSet.fieldW > MIN_FIELD_W) tempSet.fieldW--;  break;
                 case 2:     if(tempSet.fieldH > MIN_FIELD_H) tempSet.fieldH--;  break;
                 case 3:     if(tempSet.population > MIN_POPULATION) tempSet.population -= 10; break;
-                case 4:     tempSet.socialGene = !tempSet.socialGene; break;
+                case 4:     tempSet.socialGene = !tempSet.socialGene;
+                            if(tempSet.lazyGene) tempSet.lazyGene = false; break;
                 case 5:     tempSet.survivalGene = !tempSet.survivalGene; break;
-                case 6:     tempSet.lazyGene = !tempSet.lazyGene; break;
+                case 6:     tempSet.lazyGene = !tempSet.lazyGene;
+                            if(!tempSet.socialGene) tempSet.socialGene = true; break;
                 case 7:     tempSet.aging = !tempSet.aging; break;
             }
             break;
@@ -100,9 +102,11 @@ void menuSettings(const char *filename, gameSettings &settings) {
                 case 1:     if(tempSet.fieldW < MAX_FIELD_W) tempSet.fieldW++;  break;
                 case 2:     if(tempSet.fieldH < MAX_FIELD_H) tempSet.fieldH++;  break;
                 case 3:     if(tempSet.population < MAX_POPULATION) tempSet.population += 10; break;
-                case 4:     tempSet.socialGene = !tempSet.socialGene; break;
+                case 4:     tempSet.socialGene = !tempSet.socialGene;
+                            if(tempSet.lazyGene) tempSet.lazyGene = false; break;
                 case 5:     tempSet.survivalGene = !tempSet.survivalGene; break;
-                case 6:     tempSet.lazyGene = !tempSet.lazyGene; break;
+                case 6:     tempSet.lazyGene = !tempSet.lazyGene;
+                            if(!tempSet.socialGene) tempSet.socialGene = true; break;
                 case 7:     tempSet.aging = !tempSet.aging; break;
             }
             break;
