@@ -124,19 +124,19 @@ CTEST(logic_suite, harm_cell) {
 
     field[h][w].isAlive = true;
     field[h][w].health = 2;
-    harmCell(field, h, w);
+    harmCell(field[h][w]);
     ASSERT_TRUE(field[h][w].isAlive);
     ASSERT_EQUAL(1, field[h][w].health);
 
     field[h][w].isAlive = true;
     field[h][w].health = 1;
-    harmCell(field, h, w);
+    harmCell(field[h][w]);
     ASSERT_FALSE(field[h][w].isAlive);
     ASSERT_EQUAL(0, field[h][w].health);
 
     field[h][w].isAlive = false;
     field[h][w].health = 0;
-    harmCell(field, h, w);
+    harmCell(field[h][w]);
     ASSERT_FALSE(field[h][w].isAlive);
     ASSERT_EQUAL(0, field[h][w].health);
 }
@@ -149,12 +149,12 @@ CTEST(logic_suite, cell_aging) {
     int h = 1, w = 1;
     field[h][w].isAlive = true;
     field[h][w].age = 1;
-    cellAging(settings, field, h, w);
+    cellAging(settings, field[h][w]);
     ASSERT_EQUAL(2, field[h][w].age);
 
     field[h][w].isAlive = true;
     field[h][w].age = MAX_AGE;
-    cellAging(settings, field, h, w);
+    cellAging(settings, field[h][w]);
     ASSERT_FALSE(field[h][w].isAlive);
 
     field[h][w].isAlive = false;
