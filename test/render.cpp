@@ -12,6 +12,8 @@ CTEST(render_suite, calculating_cell_color) {
     int expected = 0, real = 0;
     int h = 1, w = 1;
 
+    field[h][w].health = field[h][w].maxHealth = 1;
+
     // Мертвая клетка
     settings.socialGene = false;
     field[h][w].isAlive = false;

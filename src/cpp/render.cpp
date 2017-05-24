@@ -14,6 +14,10 @@ int calculateCellColor(const gameSettings settings, const cell c) {
             green = socialGreen[activeGene];
             blue = socialBlue[activeGene];
         }
+        float pallidFactor = 1.0f - (float)c.health / c.maxHealth;
+        red = red + (230 - red) * pallidFactor;
+        green  = green + (230 - green) * pallidFactor;
+        blue = blue + (230 - blue) * pallidFactor;
         return COLOR(red, green, blue);
     }
     else return COLOR(230, 230, 230);
@@ -40,7 +44,7 @@ void renderField(const gameSettings settings, gameField &field) {
                 if (c.isAlive) {
                     if(c.maxHealth > 1) {
                         int rate = c.maxHealth - 1;
-                        setfillstyle(SOLID_FILL, mulColor(color, 0.65f));
+                        setfillstyle(SOLID_FILL, mulColor(color, 0.8f));
                         bar(left, top, left + rate, top + off);
                         bar(left + rate, top + off - rate, left + off, top + off);
                     }
