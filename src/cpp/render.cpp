@@ -6,9 +6,9 @@
 #include <iostream>
 
 int calculateCellColor(const gameSettings settings, const gameField field,
-                    const int h, const int w)
+                       const int h, const int w)
 {
-    int red = 0, green = 127, blue = 0;
+    int red = 71, green = 181, blue = 16;
     if (field[h][w].isAlive) {
         if (settings.socialGene) {
             int activeGene = field[h][w].socialGene;
@@ -22,9 +22,9 @@ int calculateCellColor(const gameSettings settings, const gameField field,
 }
 
 inline int mulColor(const int color, const float factor) {
-    unsigned char r = (color & 0xFF) * factor;
-    unsigned char g = ((color >> 8) & 0xFF) * factor;
-    unsigned char b = ((color >> 16) & 0xFF) * factor;
+    byte r = (color & 0xFF) * factor;
+    byte g = ((color >> 8) & 0xFF) * factor;
+    byte b = ((color >> 16) & 0xFF) * factor;
     return COLOR(r, g, b);
 }
 
@@ -40,11 +40,20 @@ void renderField(const gameSettings settings, gameField &field) {
 
                 if (field[i][j].isAlive && field[i][j].maxHealth > 1) {
                     int rate = field[i][j].maxHealth - 1;
-                    setfillstyle(SOLID_FILL, mulColor(color, 0.65f));
+                    setfillstyle(SOLID_FILL, mulColor(color, 0.5f));
                     bar(left, top, left + rate, top + CELL_SIZE_PX - 1);
                     bar(left, top + CELL_SIZE_PX - 1 - rate,
                         left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
                 }
+
+                int centerW = left + CELL_SIZE_PX / 2;
+                int centerH = top + CELL_SIZE_PX / 2;
+                if (field[i][j].isAlive && field[i][j].isLazy) {
+                    setcolor(mulColor(color, 0.5f));
+                    line(centerW, centerH - 4, centerW + 3, centerH - 1);
+                    line(centerW, centerH - 1, centerW + 3, centerH - 4);
+                }
+
                 field[i][j].needRefresh = false;
             }
         }

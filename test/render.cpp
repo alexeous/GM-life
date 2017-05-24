@@ -22,7 +22,7 @@ CTEST(render_suite, calculating_cell_color) {
     // Живая клетка
     settings.socialGene = false;
     field[h][w].isAlive = true;
-    expected = COLOR(0, 127, 0);
+    expected = COLOR(71, 181, 16);
     real = calculateCellColor(settings, field, h, w);
     ASSERT_EQUAL(expected, real);
 
