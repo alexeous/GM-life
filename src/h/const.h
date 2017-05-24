@@ -36,6 +36,12 @@ inline int calcWindowW(int fieldW) {
 inline int calcWindowH(int fieldH) {
     return fieldH * CELL_SIZE_PX + (fieldH + 1) * GRID_THICKNESS_PX + STATUS_BAR_HEIGHT;
 }
+inline int calcCellLeft(int w) {
+    return (CELL_SIZE_PX) * (w - 1) + GRID_THICKNESS_PX * w;
+}
+inline int calcCellTop(int h) {
+    return (CELL_SIZE_PX) * (h - 1) + GRID_THICKNESS_PX * h;
+}
 
 // Палитра цветов клеток (для гена социальности)
 const int socialRed[9]   = { 250, 250, 125,   0,   0,   0, 125, 250, 250 };

@@ -5,13 +5,11 @@
 #include "struct.h"
 #include <iostream>
 
-int calculateCellColor(const gameSettings settings, const gameField field,
-                       const int h, const int w)
-{
+int calculateCellColor(const gameSettings settings, const cell c) {
     int red = 71, green = 181, blue = 16;
-    if (field[h][w].isAlive) {
+    if (c.isAlive) {
         if (settings.socialGene) {
-            int activeGene = field[h][w].socialGene;
+            int activeGene = c.socialGene;
             red = socialRed[activeGene];
             green = socialGreen[activeGene];
             blue = socialBlue[activeGene];
@@ -31,30 +29,30 @@ inline int mulColor(const int color, const float factor) {
 void renderField(const gameSettings settings, gameField &field) {
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
-            if (field[i][j].needRefresh) {
-                int color = calculateCellColor(settings, field, i, j);
+            cell &c = field[i][j];
+            if (c.needRefresh) {
+                int left = calcCellLeft(j), top = calcCellTop(i);
+                int off = CELL_SIZE_PX - 1;
+                int color = calculateCellColor(settings, c);
                 setfillstyle(SOLID_FILL, color);
-                int left = (CELL_SIZE_PX) * (j - 1) + GRID_THICKNESS_PX * j;
-                int top = (CELL_SIZE_PX) * (i - 1) + GRID_THICKNESS_PX * i;
-                bar(left, top, left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
+                bar(left, top, left + off, top + off);
 
-                if (field[i][j].isAlive && field[i][j].maxHealth > 1) {
-                    int rate = field[i][j].maxHealth - 1;
-                    setfillstyle(SOLID_FILL, mulColor(color, 0.5f));
-                    bar(left, top, left + rate, top + CELL_SIZE_PX - 1);
-                    bar(left, top + CELL_SIZE_PX - 1 - rate,
-                        left + CELL_SIZE_PX - 1, top + CELL_SIZE_PX - 1);
+                if (c.isAlive) {
+                    if(c.maxHealth > 1) {
+                        int rate = c.maxHealth - 1;
+                        setfillstyle(SOLID_FILL, mulColor(color, 0.65f));
+                        bar(left, top, left + rate, top + off);
+                        bar(left + rate, top + off - rate, left + off, top + off);
+                    }
+                    if(c.isLazy) {
+                        int centerW = left + CELL_SIZE_PX / 2;
+                        int centerH = top + CELL_SIZE_PX / 2;
+                        setcolor(~color & 0xFFFFFF);
+                        line(centerW, centerH - 4, centerW + 3, centerH - 1);
+                        line(centerW, centerH - 1, centerW + 3, centerH - 4);
+                    }
                 }
-
-                int centerW = left + CELL_SIZE_PX / 2;
-                int centerH = top + CELL_SIZE_PX / 2;
-                if (field[i][j].isAlive && field[i][j].isLazy) {
-                    setcolor(mulColor(color, 0.5f));
-                    line(centerW, centerH - 4, centerW + 3, centerH - 1);
-                    line(centerW, centerH - 1, centerW + 3, centerH - 4);
-                }
-
-                field[i][j].needRefresh = false;
+                c.needRefresh = false;
             }
         }
     }
