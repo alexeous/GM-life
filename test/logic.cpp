@@ -149,12 +149,12 @@ CTEST(logic_suite, cell_aging) {
     int h = 1, w = 1;
     field[h][w].isAlive = true;
     field[h][w].age = 1;
-    cellAging(settings, field[h][w]);
+    cellAging(field[h][w]);
     ASSERT_EQUAL(2, field[h][w].age);
 
     field[h][w].isAlive = true;
     field[h][w].age = MAX_AGE;
-    cellAging(settings, field[h][w]);
+    cellAging(field[h][w]);
     ASSERT_FALSE(field[h][w].isAlive);
 
     field[h][w].isAlive = false;

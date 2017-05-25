@@ -84,7 +84,7 @@ void harmCell(cell &c) {
     c.needRefresh = true;
 }
 
-void cellAging(const gameSettings settings, cell &c) {
+void cellAging(cell &c) {
 	if(c.isAlive){
 		if(c.age < MAX_AGE) c.age++;
 		else {
@@ -123,13 +123,13 @@ void migrateCell(const gameSettings settings, gameField &field, const int h, con
 
 void logic(const gameSettings settings, gameField &oldField) {
     gameField newField;
-    bool toreador;
+    bool toreador = true;
     if(settings.socialGene) {
         for(int i = 1; i <= settings.fieldH; i++)
             for(int j = 1; j <= settings.fieldW; j++) {
                 // Перед тем, как будет рассчитано новое поколение,
                 // клетки мигрируют в комфортные условия
-                toreador = oldField[i][j].isLazy == true && rand() % 10 < 3;
+                if(oldField[i][j].isLazy) toreador = rand() % 10 < 3;
                 if (oldField[i][j].isAlive && toreador)
                     migrateCell(settings, oldField, i, j);
             }
@@ -143,7 +143,7 @@ void logic(const gameSettings settings, gameField &oldField) {
             } else {    // Теряет здоровье, когда меньше 2 или больше 3 соседей:
                 if(neighbors < 2 || neighbors > 3) harmCell(newField[i][j]);
             }
-            if(settings.aging) cellAging(settings, newField[i][j]);
+            if(settings.aging) cellAging(newField[i][j]);
         }
 	}
 	copyField(settings, oldField, newField);

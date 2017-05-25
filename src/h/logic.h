@@ -8,7 +8,7 @@
 void firstBorn(const gameSettings settings, cell &newcell);
 void bornCell(const gameField oldField, gameField &newField, const int h, const int w);
 void harmCell(cell &c);
-void cellAging(const gameSettings settings, cell &c);
+void cellAging(cell &c);
 
 bool wouldMigrateTo(const gameSettings settings, gameField field, int h, int w, int toH, int toW);
 void migrateCell(const gameSettings settings, gameField &field, const int h, const int w);
