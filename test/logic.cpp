@@ -45,6 +45,7 @@ CTEST(logic_suite, field_copying) {
     for(int i = 1; i <= settings.fieldH; i++) {
         for(int j = 1; j <= settings.fieldW; j++) {
             ASSERT_TRUE(fieldSrc[i][j].isAlive == fieldDest[i][j].isAlive);
+            ASSERT_TRUE(fieldSrc[i][j].isLazy == fieldDest[i][j].isLazy);
             ASSERT_TRUE(fieldSrc[i][j].health == fieldDest[i][j].health);
             ASSERT_TRUE(fieldSrc[i][j].socialGene == fieldDest[i][j].socialGene);
             ASSERT_TRUE(fieldSrc[i][j].maxHealth == fieldDest[i][j].maxHealth);
@@ -97,11 +98,13 @@ CTEST(logic_suite, born_cell) {
     cell &newCell = newField[h][w];
 
     deadCell.isAlive = false;
+    deadCell.isLazy = false;
     deadCell.health = 0;
     deadCell.socialGene = 0;
     deadCell.maxHealth = 1;
 
     parentCell.isAlive = true;
+    parentCell.isLazy = true;
     parentCell.health = 1;
     parentCell.socialGene = 5;
     parentCell.maxHealth = 3;
@@ -109,6 +112,7 @@ CTEST(logic_suite, born_cell) {
     bornCell(oldField, newField, h, w);
 
     ASSERT_TRUE(newCell.isAlive);
+    ASSERT_TRUE(newCell.isLazy);
     ASSERT_TRUE(newCell.health > 0);
     ASSERT_TRUE(newCell.socialGene == parentCell.socialGene);
     ASSERT_TRUE(newCell.maxHealth == parentCell.maxHealth);
@@ -172,6 +176,7 @@ CTEST(logic_suite, migrate_cell) {
 
     // Единственное подходящее место
     field[h][w].isAlive = true;
+    field[h][w].isLazy = true;
     field[h][w].health = 1;
     field[h][w].socialGene = 4;
     field[h][w].maxHealth = 3;
@@ -186,6 +191,7 @@ CTEST(logic_suite, migrate_cell) {
     migrateCell(settings, field, h, w);
     ASSERT_FALSE(field[h][w].isAlive);
     ASSERT_TRUE(field[h][w + 1].isAlive);
+    ASSERT_TRUE(field[h][w + 1].isLazy);
     ASSERT_TRUE(field[h][w + 1].health == field[h][w].health);
     ASSERT_TRUE(field[h][w + 1].socialGene == field[h][w].socialGene);
     ASSERT_TRUE(field[h][w + 1].maxHealth == field[h][w].maxHealth);
@@ -194,6 +200,7 @@ CTEST(logic_suite, migrate_cell) {
     // Два подходящих места
     startGame(settings, field);
     field[h][w].isAlive = true;
+    field[h][w].isLazy = true;
     field[h][w].health = 1;
     field[h][w].socialGene = 4;
     field[h][w].maxHealth = 3;
@@ -210,6 +217,7 @@ CTEST(logic_suite, migrate_cell) {
     migrateCell(settings, field, h, w);
     ASSERT_FALSE(field[h][w].isAlive);
     ASSERT_TRUE((field[h][w - 1].isAlive) xor (field[h][w + 1].isAlive));
+    ASSERT_TRUE((field[h][w - 1].isLazy) xor (field[h][w + 1].isLazy));
     ASSERT_TRUE((field[h][w - 1].health == field[h][w].health) xor
                 (field[h][w + 1].health == field[h][w].health));
     ASSERT_TRUE((field[h][w - 1].socialGene == field[h][w].socialGene) xor
