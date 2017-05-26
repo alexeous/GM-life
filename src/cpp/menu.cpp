@@ -41,6 +41,8 @@ bool applyChanges(const char *filename, gameSettings &dest, gameSettings src) {
 #define HIGHLIGHT_IF_CHOSEN(number) setcolor((number) == menuPoint ? GREEN : BLACK)
 // Сокращённый в одну строку sprintf
 #define FORMAT(format, ...) (sprintf(buffer, (format), ##__VA_ARGS__), buffer)
+#define CLAMP(value, low, high) std::max((low), std::min((high), (value)))
+
 
 void menuSettings(const char *filename, gameSettings &settings) {
     int menuPoint = 1;
@@ -81,43 +83,43 @@ void menuSettings(const char *filename, gameSettings &settings) {
         centralString(tempSet, 150, "CANCEL");
 
         key = getch();
+        int adjust;
         switch(key) {
-        case KEY_DOWN:  if (++menuPoint > SETT_MENU_POINTS) menuPoint = 1; break;
-        case KEY_UP:    if (--menuPoint < 1) menuPoint = SETT_MENU_POINTS; break;
-        case KEY_LEFT:
-            switch(menuPoint) {
-                case 1:     if(tempSet.fieldW > MIN_FIELD_W) tempSet.fieldW--;  break;
-                case 2:     if(tempSet.fieldH > MIN_FIELD_H) tempSet.fieldH--;  break;
-                case 3:     if(tempSet.population > MIN_POPULATION) tempSet.population -= 10; break;
-                case 4:     tempSet.socialGene = !tempSet.socialGene;
-                            if(tempSet.lazyGene) tempSet.lazyGene = false; break;
-                case 5:     tempSet.survivalGene = !tempSet.survivalGene; break;
-                case 6:     tempSet.lazyGene = !tempSet.lazyGene;
-                            if(!tempSet.socialGene) tempSet.socialGene = true; break;
-                case 7:     tempSet.aging = !tempSet.aging; break;
-            }
-            break;
-        case KEY_RIGHT:
-            switch(menuPoint) {
-                case 1:     if(tempSet.fieldW < MAX_FIELD_W) tempSet.fieldW++;  break;
-                case 2:     if(tempSet.fieldH < MAX_FIELD_H) tempSet.fieldH++;  break;
-                case 3:     if(tempSet.population < MAX_POPULATION) tempSet.population += 10; break;
-                case 4:     tempSet.socialGene = !tempSet.socialGene;
-                            if(tempSet.lazyGene) tempSet.lazyGene = false; break;
-                case 5:     tempSet.survivalGene = !tempSet.survivalGene; break;
-                case 6:     tempSet.lazyGene = !tempSet.lazyGene;
-                            if(!tempSet.socialGene) tempSet.socialGene = true; break;
-                case 7:     tempSet.aging = !tempSet.aging; break;
-            }
-            break;
-        case VK_RETURN:
-            switch(menuPoint) {
-                case 8: applyChanges(filename, settings, tempSet); // "APPLY"
-                        return;
-                case 9: return; // "CANCEL"
-            }
-            break;
-        case VK_ESCAPE: return;    // Выход в главное меню по нажатию Escape
+            case KEY_DOWN:  if (++menuPoint > SETT_MENU_POINTS) menuPoint = 1; break;
+            case KEY_UP:    if (--menuPoint < 1) menuPoint = SETT_MENU_POINTS; break;
+            case KEY_LEFT: 
+            case KEY_RIGHT:
+                adjust = (key == KEY_LEFT) ? -1 : 1;
+                switch(menuPoint) {
+                    case 1: tempSet.fieldW += adjust;
+                            tempSet.fieldW = CLAMP(tempSet.fieldW, MIN_FIELD_W, MAX_FIELD_W);
+                            break;
+                    case 2: tempSet.fieldH += adjust;
+                            tempSet.fieldH =  CLAMP(tempSet.fieldH, MIN_FIELD_H, MAX_FIELD_H);
+                            break;
+                    case 3: tempSet.population += adjust * 10;
+                            tempSet.population = CLAMP(tempSet.population, MIN_POPULATION, MAX_POPULATION); 
+                            break;
+                    case 4: tempSet.socialGene = !tempSet.socialGene;
+                            tempSet.lazyGene &= tempSet.socialGene; // нельзя включить laziness без sociality
+                            break;
+                    case 5: tempSet.survivalGene = !tempSet.survivalGene; 
+                            break;
+                    case 6: tempSet.lazyGene = !tempSet.lazyGene;
+                            tempSet.socialGene |= tempSet.lazyGene; // нельзя включить laziness без sociality
+                            break;
+                    case 7: tempSet.aging = !tempSet.aging; 
+                            break;
+                }
+                break;
+            case VK_RETURN:
+                switch(menuPoint) {
+                    case 8: applyChanges(filename, settings, tempSet); // "APPLY"
+                            return;
+                    case 9: return; // "CANCEL"
+                }
+                break;
+            case VK_ESCAPE: return;    // Выход в главное меню по нажатию Escape
         }
     }
 }

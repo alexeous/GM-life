@@ -102,11 +102,11 @@ void renderStatusBar(const gameSettings settings, bool firstDraw) {
         settextjustify(RIGHT_TEXT, BOTTOM_TEXT);
         bar3d(wndW - 22, wndH - 17, wndW - 8, wndH - 3, 2, true);
         bar3d(wndW - 42, wndH - 17, wndW - 28, wndH - 3, 2, true);
-
+        // рисование стрелок в клавишах:
         line(wndW - 11, wndH - 10, wndW - 17, wndH - 10);
         line(wndW - 19, wndH - 10, wndW - 15, wndH - 14);
         line(wndW - 19, wndH - 10, wndW - 15, wndH - 6);
-        line(wndW - 40, wndH - 10, wndW - 31, wndH -10);
+        line(wndW - 40, wndH - 10, wndW - 31, wndH - 10);
         line(wndW - 31, wndH -10, wndW - 35, wndH - 14);
         line(wndW - 31, wndH -10, wndW - 35, wndH - 6);
 
