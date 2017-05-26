@@ -41,7 +41,7 @@ bool applyChanges(const char *filename, gameSettings &dest, gameSettings src) {
 #define HIGHLIGHT_IF_CHOSEN(number) setcolor((number) == menuPoint ? GREEN : BLACK)
 // Сокращённый в одну строку sprintf
 #define FORMAT(format, ...) (sprintf(buffer, (format), ##__VA_ARGS__), buffer)
-#define CLAMP(value, low, high) std::max((low), std::min((high), (value)))
+#define CLAMP(value, low, high) (value) < (low) ? (low) : ((value) > (high) ? (high) : (value))
 
 
 void menuSettings(const char *filename, gameSettings &settings) {
