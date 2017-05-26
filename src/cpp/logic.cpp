@@ -9,16 +9,20 @@ void startGame(const gameSettings settings, gameField &field) {
 	int w = settings.fieldW;
 	int h = settings.fieldH;
 	for(int i = 0; i < h+2; i++) {
-		field[i][0].isAlive = field[i][w+1].isAlive = false;	// заполняем клетки по бокам поля
+		field[i][0].isAlive = false;    // заполняем краевые клетки слева
+        field[i][w+1].isAlive = false;	// и справа поля
 		for(int j = 1; j <= w; j++) {
-            if(rand() % 100 < settings.population)
+            int chanceToBorn = rand() % 100;
+            if(chanceToBorn < settings.population)
                 firstBorn(settings, field[i][j]);
-            else field[i][j].isAlive = false;
+            else 
+                field[i][j].isAlive = false;
             field[i][j].needRefresh = true;
 		}
 	}
 	for(int j = 0; j < w+2; j++) {
-		field[0][j].isAlive = field[h+1][j].isAlive = false;	// заполняем клетки сверху и снизу поля
+		field[0][j].isAlive = false;    // заполняем краевые клетки сверху
+        field[h+1][j].isAlive = false;	// и снизу поля
 	}
 	cleardevice();
 }
@@ -28,11 +32,11 @@ int neighborsAlive(const gameField field, const int h, const int w, cell *neighb
     int neighbors = 0;
 
     for(int i = 0; i < 8; i++) {
-        int toH = h + neighborsOffsets[i].h;
-        int toW = w + neighborsOffsets[i].w;
-        if(field[toH][toW].isAlive) {
+        int nbH = h + neighborsOffsets[i].h;
+        int nbW = w + neighborsOffsets[i].w;
+        if(field[nbH][nbW].isAlive) {
             if(neighbors_out != NULL)
-                neighbors_out[neighbors] = field[toH][toW];
+                neighbors_out[neighbors] = field[nbH][nbW];
             neighbors++;
         }
     }
@@ -50,11 +54,12 @@ void copyField(const gameSettings settings, gameField &dest, const gameField src
 void firstBorn(const gameSettings settings, cell &newcell) {
     newcell.socialGene = rand() % 9;
     newcell.isAlive = true;
+    newcell.age = 0;
+
     if(settings.survivalGene)
         newcell.health = newcell.maxHealth = (rand() % MAX_HEALTH) + 1;
     else newcell.health = newcell.maxHealth = 1;
-    newcell.age = 0;
-    newcell.needRefresh = true;
+
     if(settings.lazyGene && rand() % 2 == 1) newcell.isLazy = true;
     else newcell.isLazy = false;
 }
@@ -62,23 +67,26 @@ void firstBorn(const gameSettings settings, cell &newcell) {
 void bornCell(const gameField oldField, gameField &newField, const int h, const int w) {
     cell &newcell = newField[h][w];
     newcell.isAlive = true;
+    newcell.age = 0;
+    newcell.needRefresh = true;
 
     cell parents[8];
     int parentCount = neighborsAlive(oldField, h, w, parents);
 
     int parentIndex = rand() % parentCount;
     newcell.socialGene = parents[parentIndex].socialGene;
+
     parentIndex = rand() % parentCount;
     newcell.maxHealth = parents[parentIndex].maxHealth;
     newcell.health = newcell.maxHealth;
-    newcell.age = 0;
-    newcell.needRefresh = true;
+
     parentIndex = rand() % parentCount;
     newcell.isLazy = parents[parentIndex].isLazy;
 }
 
 void harmCell(cell &c) {
-    if(c.health > 0) c.health--;
+    if(c.health > 0) 
+        c.health--;
     if(c.health <= 0)
         c.isAlive = false;
     c.needRefresh = true;
@@ -128,10 +136,10 @@ void logic(const gameSettings settings, gameField &oldField) {
             for(int j = 1; j <= settings.fieldW; j++) {
                 // Перед тем, как будет рассчитано новое поколение,
                 // клетки мигрируют в комфортные условия
-                bool toreador = true;
+                bool doMigrate = true;
 				if (oldField[i][j].isLazy) 
-					toreador = rand() % 10 < 3;
-                if (oldField[i][j].isAlive && toreador)
+					doMigrate = rand() % 10 < 3;
+                if (oldField[i][j].isAlive && doMigrate)
                     migrateCell(settings, oldField, i, j);
             }
     }
